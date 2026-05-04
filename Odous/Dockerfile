@@ -1,18 +1,19 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Copy the nested Odous folder contents
-COPY Odous/ /src/
+# Copy csproj from the root (where it actually is)
+COPY Odous.csproj .
+RUN dotnet restore
 
-# Publish the app
+# Copy everything else from the root
+COPY . .
 RUN dotnet publish -c Release -o /app/publish
 
-# Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# Ensure /tmp directory is writable
+# Create writable directory for database
 RUN mkdir -p /tmp && chmod 777 /tmp
 
 ENV ASPNETCORE_ENVIRONMENT=Production
