@@ -6,48 +6,119 @@
 
 <div class="container mt-4">
     <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="mb-0">Add New Patient</h4>
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient-primary text-white rounded-top-4 py-3">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-plus-fill fs-1 me-3"></i>
+                        <div>
+                            <h3 class="mb-0 fw-bold">Add New Patient</h3>
+                            <p class="mb-0 opacity-75">Enter patient information below</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <EditForm FormName="addPatientForm" Model="@newPatient" OnValidSubmit="HandleSave">
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Full Name</label>
-                            <InputText @bind-Value="newPatient.Name" class="form-control" />
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-hash"></i> Patient MR #
+                            </label>
+                            <input @bind="newPatient.PatientMR" class="form-control bg-light" readonly disabled />
+                            <small class="text-muted">Auto-generated sequence number</small>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-person-badge"></i> Full Name <span class="text-danger">*</span>
+                                </label>
+                                <input @bind="newPatient.Name" class="form-control form-control-lg" placeholder="Enter patient's full name" />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-gender-ambiguous"></i> Gender
+                                </label>
+                                <select @bind="newPatient.Gender" class="form-select">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-calendar"></i> Age
+                                </label>
+                                <input type="number" @bind="newPatient.Age" class="form-control" placeholder="Years" />
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-telephone"></i> Contact Number
+                                </label>
+                                <input @bind="newPatient.ContactNo" class="form-control" placeholder="+92 XXX XXXXXXX" />
+                            </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Age</label>
-                                <InputNumber @bind-Value="newPatient.Age" class="form-control" />
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-envelope"></i> Email Address
+                                </label>
+                                <input @bind="newPatient.Email" type="email" class="form-control" placeholder="patient@example.com" />
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Phone</label>
-                                <InputText @bind-Value="newPatient.Phone" class="form-control" />
-                            </div>
-                        </div>
 
-                        <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Email</label>
-                                <InputText @bind-Value="newPatient.Email" type="email" class="form-control" />
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label fw-bold">Last Visit</label>
-                                <InputDate @bind-Value="newPatient.LastVisit" class="form-control" />
+                                <label class="form-label fw-semibold">
+                                    <i class="bi bi-calendar-heart"></i> Last Visit
+                                </label>
+                                <input type="date" @bind="newPatient.LastVisit" class="form-control" />
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label fw-bold">Notes</label>
-                            <InputTextArea @bind-Value="newPatient.Notes" class="form-control" rows="3" />
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-geo-alt"></i> Address
+                            </label>
+                            <textarea @bind="newPatient.Address" class="form-control" rows="2" placeholder="House #, Street, City, Postal Code"></textarea>
                         </div>
 
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary" disabled="@isSaving">@(isSaving ? "Saving..." : "Save Patient")</button>
-                            <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-pencil-square"></i> Dental Notes
+                            </label>
+                            <textarea @bind="newPatient.Notes" class="form-control" rows="2" placeholder="Dental condition, treatment plan, allergies, etc."></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-activity"></i> Status
+                            </label>
+                            <select @bind="newPatient.Status" class="form-select">
+                                <option value="Active">Active</option>
+                                <option value="Inactive">Inactive</option>
+                                <option value="Pending">Pending</option>
+                            </select>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <div class="d-flex gap-3 justify-content-end">
+                            <button type="button" class="btn btn-outline-secondary btn-lg px-4" @onclick="Cancel">Cancel</button>
+                            <button type="submit" class="btn btn-primary btn-lg px-5" disabled="@isSaving">
+                                @if (isSaving)
+                                {
+                                    <span>Saving...</span>
+                                }
+                                else
+                                {
+                                    <span>Save Patient</span>
+                                }
+                            </button>
                         </div>
                     </EditForm>
                 </div>
@@ -56,9 +127,26 @@
     </div>
 </div>
 
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2) !important;
+    }
+</style>
+
 @code {
     private Patient newPatient = new Patient();
     private bool isSaving = false;
+
+    protected override void OnInitialized()
+    {
+        var random = new Random();
+        newPatient.PatientMR = 10000 + random.Next(1, 99999);
+    }
 
     private async Task HandleSave()
     {
@@ -68,9 +156,11 @@
         }
 
         isSaving = true;
+        StateHasChanged();
+
         await PatientService.AddPatientAsync(newPatient);
         isSaving = false;
-        
+
         Navigation.NavigateTo("/patients", forceLoad: true);
     }
 
