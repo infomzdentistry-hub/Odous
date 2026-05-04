@@ -10,7 +10,7 @@ namespace Odous.Data
         {
         }
 
-        public DbSet<Patient> Patients { get; set; } = default!;
-        public DbSet<Appointment> Appointments { get; set; } = default!;
+        public DbSet<Patient> Patients { get; set; } = null!;
+        public DbSet<Appointment> Appointments { get; set; } = null!;
     }
 }
