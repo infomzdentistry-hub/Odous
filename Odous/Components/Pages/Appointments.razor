@@ -1,0 +1,87 @@
+﻿@page "/appointments"
+@using Odous.Models
+@using Odous.Services
+@inject AppointmentService AppointmentService
+
+<h3>Appointments</h3>
+
+<a href="/addappointment" class="btn btn-primary mb-3">+ Schedule Appointment</a>
+
+<div class="alert alert-info">
+    <strong>Total Appointments:</strong> @allAppointments.Count
+</div>
+
+@if (allAppointments.Count == 0)
+{
+    <div class="alert alert-warning">
+        No appointments yet. Click "Schedule Appointment" to get started!
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var appointment in allAppointments)
+            {
+                <tr>
+                    <td>@appointment.Id</td>
+                    <td>@appointment.PatientName</td>
+                    <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
+                    <td>@appointment.Reason</td>
+                    <td>
+                        @if (appointment.Status == "Scheduled")
+                        {
+                            <span class="badge bg-warning">@appointment.Status</span>
+                        }
+                        else if (appointment.Status == "Confirmed")
+                        {
+                            <span class="badge bg-primary">@appointment.Status</span>
+                        }
+                        else if (appointment.Status == "Completed")
+                        {
+                            <span class="badge bg-success">@appointment.Status</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">@appointment.Status</span>
+                        }
+                    </td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteAppointment(appointment.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Appointment> allAppointments = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAppointments();
+    }
+
+    private async Task LoadAppointments()
+    {
+        allAppointments = await AppointmentService.GetAllAppointmentsAsync();
+        StateHasChanged();
+    }
+
+    private async Task DeleteAppointment(int id)
+    {
+        await AppointmentService.DeleteAppointmentAsync(id);
+        await LoadAppointments();
+    }
+}

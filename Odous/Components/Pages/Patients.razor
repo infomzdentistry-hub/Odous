@@ -1,0 +1,72 @@
+﻿@page "/patients"
+@using Odous.Models
+@using Odous.Services
+@inject PatientService PatientService
+
+<h3>Patient List</h3>
+
+<a href="/addpatient" class="btn btn-primary mb-3">+ Add New Patient</a>
+
+<div class="alert alert-info">
+    <strong>Total Patients:</strong> @allPatients.Count
+</div>
+
+@if (allPatients.Count == 0)
+{
+    <div class="alert alert-warning">
+        No patients yet. Click "Add New Patient" to get started!
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Last Visit</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var patient in allPatients)
+            {
+                <tr>
+                    <td>@patient.Id</td>
+                    <td>@patient.Name</td>
+                    <td>@patient.Age</td>
+                    <td>@patient.Phone</td>
+                    <td>@patient.Email</td>
+                    <td>@(patient.LastVisit?.ToShortDateString() ?? "Never")</td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Patient> allPatients = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        allPatients = await PatientService.GetAllPatientsAsync();
+        StateHasChanged();
+    }
+
+    private async Task DeletePatient(int id)
+    {
+        await PatientService.DeletePatientAsync(id);
+        await LoadPatients();
+    }
+}
