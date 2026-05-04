@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ADD THIS LINE FOR RENDER
+builder.WebHost.UseUrls("http://*:8080");
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
