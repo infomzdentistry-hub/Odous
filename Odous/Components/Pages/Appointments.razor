@@ -3,67 +3,100 @@
 @using Odous.Services
 @inject AppointmentService AppointmentService
 
-<h3>Appointments</h3>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient-success text-white rounded-top-4 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">
+                        <i class="bi bi-calendar-week me-2"></i> Appointments
+                    </h3>
+                    <p class="mb-0 opacity-75">Manage all scheduled appointments</p>
+                </div>
+                <a href="/addappointment" class="btn btn-light btn-lg rounded-pill">
+                    <i class="bi bi-calendar-plus-fill me-2"></i>New Appointment
+                </a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="alert alert-info m-3">
+                <strong>Total Appointments:</strong> @allAppointments.Count
+            </div>
 
-<a href="/addappointment" class="btn btn-primary mb-3">+ Schedule Appointment</a>
-
-<div class="alert alert-info">
-    <strong>Total Appointments:</strong> @allAppointments.Count
+            @if (allAppointments.Count == 0)
+            {
+                <div class="text-center p-5">
+                    <h4 class="text-muted">No appointments yet</h4>
+                    <p>Click "New Appointment" to get started!</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Service</th>
+                                <th>Dentist</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var appointment in allAppointments)
+                            {
+                                <tr>
+                                    <td>@appointment.AppointmentMR</td>
+                                    <td>@appointment.PatientName</td>
+                                    <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@($"{appointment.StartTime:hh\\:mm} - {appointment.EndTime:hh\\:mm}")</td>
+                                    <td>@appointment.ServiceType</td>
+                                    <td>@appointment.Dentist</td>
+                                    <td>
+                                        @if (appointment.Status == "Scheduled")
+                                        {
+                                            <span class="badge bg-warning">Scheduled</span>
+                                        }
+                                        else if (appointment.Status == "Confirmed")
+                                        {
+                                            <span class="badge bg-primary">Confirmed</span>
+                                        }
+                                        else if (appointment.Status == "Completed")
+                                        {
+                                            <span class="badge bg-success">Completed</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">@appointment.Status</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteAppointment(appointment.Id)">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
-@if (allAppointments.Count == 0)
-{
-    <div class="alert alert-warning">
-        No appointments yet. Click "Schedule Appointment" to get started!
-    </div>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Patient Name</th>
-                <th>Date</th>
-                <th>Reason</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var appointment in allAppointments)
-            {
-                <tr>
-                    <td>@appointment.Id</td>
-                    <td>@appointment.PatientName</td>
-                    <td>@appointment.AppointmentDate.ToString("MMM dd, yyyy")</td>
-                    <td>@appointment.Reason</td>
-                    <td>
-                        @if (appointment.Status == "Scheduled")
-                        {
-                            <span class="badge bg-warning">@appointment.Status</span>
-                        }
-                        else if (appointment.Status == "Confirmed")
-                        {
-                            <span class="badge bg-primary">@appointment.Status</span>
-                        }
-                        else if (appointment.Status == "Completed")
-                        {
-                            <span class="badge bg-success">@appointment.Status</span>
-                        }
-                        else
-                        {
-                            <span class="badge bg-danger">@appointment.Status</span>
-                        }
-                    </td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" @onclick="() => DeleteAppointment(appointment.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<style>
+    .bg-gradient-success {
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    }
+
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+    }
+</style>
 
 @code {
     private List<Appointment> allAppointments = new();

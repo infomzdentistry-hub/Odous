@@ -3,52 +3,90 @@
 @using Odous.Services
 @inject PatientService PatientService
 
-<h3>Patient List</h3>
+<div class="container mt-4">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-header bg-gradient-primary text-white rounded-top-4 py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h3 class="mb-0 fw-bold">Patient Management</h3>
+                    <p class="mb-0 opacity-75">Manage all registered patients</p>
+                </div>
+                <a href="/addpatient" class="btn btn-light btn-lg rounded-pill">Add Patient</a>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="alert alert-info m-3">
+                <strong>Total Patients:</strong> @allPatients.Count
+            </div>
 
-<a href="/addpatient" class="btn btn-primary mb-3">+ Add New Patient</a>
-
-<div class="alert alert-info">
-    <strong>Total Patients:</strong> @allPatients.Count
+            @if (allPatients.Count == 0)
+            {
+                <div class="text-center p-5">
+                    <h4 class="text-muted">No patients yet</h4>
+                    <p>Click "Add Patient" to get started!</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>MR#</th>
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Contact</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var patient in allPatients)
+                            {
+                                <tr>
+                                    <td>@patient.PatientMR</td>
+                                    <td>@patient.Name</td>
+                                    <td>@patient.Gender</td>
+                                    <td>@patient.Age</td>
+                                    <td>@patient.ContactNo</td>
+                                    <td>
+                                        @if (patient.Status == "Active")
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else if (patient.Status == "Inactive")
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-warning">Pending</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
 </div>
 
-@if (allPatients.Count == 0)
-{
-    <div class="alert alert-warning">
-        No patients yet. Click "Add New Patient" to get started!
-    </div>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Age</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Last Visit</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var patient in allPatients)
-            {
-                <tr>
-                    <td>@patient.Id</td>
-                    <td>@patient.Name</td>
-                    <td>@patient.Age</td>
-                    <td>@patient.Phone</td>
-                    <td>@patient.Email</td>
-                    <td>@(patient.LastVisit?.ToShortDateString() ?? "Never")</td>
-                    <td>
-                        <button class="btn btn-danger btn-sm" @onclick="() => DeletePatient(patient.Id)">Delete</button>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .badge {
+        font-size: 0.85em;
+        padding: 0.5em 0.75em;
+    }
+</style>
 
 @code {
     private List<Patient> allPatients = new();
