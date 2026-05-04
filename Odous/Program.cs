@@ -5,14 +5,19 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Force port binding for Render
+builder.WebHost.UseUrls("http://*:8080");
+
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Register Database Context
-builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Use /tmp directory for database (Render allows writing here)
+var dbPath = Path.Combine("/tmp", "odous.db");
+Console.WriteLine($"Database path: {dbPath}");
 
-// Register Services with Database
+builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
+    options.UseSqlite($"Data Source={dbPath}"));
+
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
 
@@ -20,7 +25,7 @@ var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Error");
     app.UseHsts();
 }
 
@@ -34,8 +39,16 @@ app.MapRazorComponents<App>()
 // Create database on startup
 using (var scope = app.Services.CreateScope())
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-    dbContext.Database.EnsureCreated();
+    try
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        dbContext.Database.EnsureCreated();
+        Console.WriteLine("Database created successfully at: /tmp/odous.db");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Database error: {ex.Message}");
+    }
 }
 
 app.Run();

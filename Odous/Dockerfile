@@ -1,9 +1,22 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+
+# Copy the nested Odous folder contents
+COPY Odous/ /src/
+
+# Publish the app
+RUN dotnet publish -c Release -o /app/publish
+
+# Runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY . .
-RUN dotnet publish -c Release -o out
-EXPOSE 8080
+COPY --from=build /app/publish .
+
+# Ensure /tmp directory is writable
+RUN mkdir -p /tmp && chmod 777 /tmp
+
 ENV ASPNETCORE_ENVIRONMENT=Production
-RUN mkdir -p /var/data
-RUN chmod 777 /var/data
-ENTRYPOINT ["dotnet", "out/Odous.dll"]
+
+EXPOSE 8080
+
+ENTRYPOINT ["dotnet", "Odous.dll"]
