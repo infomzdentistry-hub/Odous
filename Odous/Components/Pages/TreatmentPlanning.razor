@@ -8,105 +8,92 @@
 <div class="container-fluid mt-4">
     <div class="card">
         <div class="card-header bg-success text-white">
-            <h3>🦷 Treatment Planning</h3>
+            <h3>Treatment Planning</h3>
         </div>
         <div class="card-body">
 
             @* Patient Search *@
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Patient Name *</label>
-                    <input class="form-control form-control-lg"
-                           list="patientList"
-                           @bind="patientName"
-                           @bind:event="oninput"
-                           placeholder="Type or select patient..." />
+                    <label class="form-label fw-bold">Patient Name</label>
+                    <input class="form-control form-control-lg" 
+                           list="patientList" 
+                           value="@patientName" 
+                           placeholder="Type or select patient..." 
+                           @onchange="OnPatientSelected" />
                     <datalist id="patientList">
                         @foreach (var p in patients)
                         {
-                            <option value="@p.Name">@p.Name</option>
+                            <option value="@p.Name" />
                         }
                     </datalist>
                 </div>
                 @if (!string.IsNullOrEmpty(patientName))
                 {
                     <div class="col-md-6 d-flex align-items-end">
-                        <span class="badge bg-success fs-6 p-2">Active Patient: @patientName</span>
+                        <span class="badge bg-success fs-6 p-2">Patient: @patientName</span>
                     </div>
                 }
             </div>
 
-            @* Dental Chart with Tooth Shapes *@
+            @* Dental Chart *@
             <div class="card mb-4 border-secondary">
-                <div class="card-header bg-light fw-bold">Dental Chart — Click on any tooth to select</div>
+                <div class="card-header bg-light fw-bold">Dental Chart — Click teeth to select</div>
                 <div class="card-body">
-                    <div class="dental-chart">
-                        <!-- Upper Teeth -->
-                        <div class="teeth-row upper-teeth">
-                            <div class="quadrant-label">Upper Right</div>
-                            <div class="teeth-group">
-                                @for (int i = upperRight.Count - 1; i >= 0; i--)
-                                {
-                                    var tooth = upperRight[i];
-                                    <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "selected" : "")" @onclick="() => ToggleTooth(tooth)">
-                                        <div class="tooth-shape tooth-upper">
-                                            <div class="tooth-number">@tooth</div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
 
-                        <div class="teeth-row upper-teeth">
-                            <div class="quadrant-label">Upper Left</div>
-                            <div class="teeth-group">
-                                @foreach (var tooth in upperLeft)
-                                {
-                                    <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "selected" : "")" @onclick="() => ToggleTooth(tooth)">
-                                        <div class="tooth-shape tooth-upper">
-                                            <div class="tooth-number">@tooth</div>
-                                        </div>
-                                    </div>
-                                }
+                    @* Upper Right (18-11) *@
+                    <div class="mb-1 text-center text-muted small">Upper Right &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Upper Left</div>
+                    <div class="d-flex justify-content-center gap-2 mb-1">
+                        @foreach (var tooth in upperRight)
+                        {
+                            <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "tooth-selected" : "")"
+                                 @onclick="() => ToggleTooth(tooth)"
+                                 title="Tooth @tooth">
+                                @((MarkupString)GetToothSvg(tooth))
+                                <div class="tooth-num">@tooth</div>
                             </div>
-                        </div>
-
-                        <!-- Lower Teeth -->
-                        <div class="teeth-row lower-teeth">
-                            <div class="quadrant-label">Lower Right</div>
-                            <div class="teeth-group">
-                                @for (int i = lowerRight.Count - 1; i >= 0; i--)
-                                {
-                                    var tooth = lowerRight[i];
-                                    <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "selected" : "")" @onclick="() => ToggleTooth(tooth)">
-                                        <div class="tooth-shape tooth-lower">
-                                            <div class="tooth-number">@tooth</div>
-                                        </div>
-                                    </div>
-                                }
+                        }
+                        <div style="width:4px; border-left:2px dashed #aaa; margin:0 10px;"></div>
+                        @foreach (var tooth in upperLeft)
+                        {
+                            <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "tooth-selected" : "")"
+                                 @onclick="() => ToggleTooth(tooth)"
+                                 title="Tooth @tooth">
+                                @((MarkupString)GetToothSvg(tooth))
+                                <div class="tooth-num">@tooth</div>
                             </div>
-                        </div>
-
-                        <div class="teeth-row lower-teeth">
-                            <div class="quadrant-label">Lower Left</div>
-                            <div class="teeth-group">
-                                @foreach (var tooth in lowerLeft)
-                                {
-                                    <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "selected" : "")" @onclick="() => ToggleTooth(tooth)">
-                                        <div class="tooth-shape tooth-lower">
-                                            <div class="tooth-number">@tooth</div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        </div>
+                        }
                     </div>
+
+                    @* Lower Right (48-41) *@
+                    <div class="d-flex justify-content-center gap-2 mt-2">
+                        @foreach (var tooth in lowerRight)
+                        {
+                            <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "tooth-selected" : "")"
+                                 @onclick="() => ToggleTooth(tooth)"
+                                 title="Tooth @tooth">
+                                @((MarkupString)GetToothSvg(tooth))
+                                <div class="tooth-num">@tooth</div>
+                            </div>
+                        }
+                        <div style="width:4px; border-left:2px dashed #aaa; margin:0 10px;"></div>
+                        @foreach (var tooth in lowerLeft)
+                        {
+                            <div class="tooth-wrapper @(selectedTeeth.Contains(tooth) ? "tooth-selected" : "")"
+                                 @onclick="() => ToggleTooth(tooth)"
+                                 title="Tooth @tooth">
+                                @((MarkupString)GetToothSvg(tooth))
+                                <div class="tooth-num">@tooth</div>
+                            </div>
+                        }
+                    </div>
+                    <div class="mt-1 text-center text-muted small">Lower Right &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lower Left</div>
 
                     @if (selectedTeeth.Count > 0)
                     {
                         <div class="mt-3 text-center">
-                            <span class="badge bg-primary fs-6">Selected Teeth: @string.Join(", ", selectedTeeth.OrderBy(t => t))</span>
-                            <button class="btn btn-sm btn-outline-secondary ms-2" @onclick="ClearTeeth">Clear Selection</button>
+                            <span class="badge bg-primary">Selected: @string.Join(", ", selectedTeeth.OrderBy(t => t))</span>
+                            <button class="btn btn-sm btn-outline-secondary ms-2" type="button" @onclick="ClearTeeth">Clear</button>
                         </div>
                     }
                 </div>
@@ -116,96 +103,110 @@
             <div class="card mb-4 border-secondary">
                 <div class="card-header bg-light fw-bold">Procedures</div>
                 <div class="card-body">
-                    @if (!string.IsNullOrEmpty(procedureError))
-                    {
-                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            @procedureError
-                            <button type="button" class="btn-close" @onclick="() => procedureError = null"></button>
-                        </div>
-                    }
+                    <div class="row g-2 flex-wrap">
 
-                    <div class="row g-2">
+                        @* Extraction *@
                         <div class="col-auto">
-                            <button class="btn btn-danger" @onclick='() => AddProcedure("Extraction", "Simple Extraction", 2500)'>
-                                🦷 Extraction (2,500)
+                            <button class="btn btn-outline-danger" type="button" @onclick="AddExtraction">
+                                🦷 Extraction <span class="badge bg-danger ms-1">2,500</span>
                             </button>
                         </div>
 
+                        @* Filling *@
                         <div class="col-auto">
                             <div class="dropdown">
-                                <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     🪥 Filling
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Filling", "Composite", 2500)'>Composite — PKR 2,500</a></li>
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Filling", "Glass Ionomer", 3500)'>Glass Ionomer — PKR 3,500</a></li>
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Filling", "Amalgam", 2000)'>Amalgam — PKR 2,000</a></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddFillingComposite">Composite — PKR 2,500</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddFillingGlassIonomer">Glass Ionomer — PKR 3,500</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddFillingCeramic">Ceramic — PKR 4,500</button></li>
                                 </ul>
                             </div>
                         </div>
 
+                        @* RCT *@
                         <div class="col-auto">
-                            <button class="btn btn-warning" @onclick='() => AddProcedure("RCT", "Root Canal", 7500)'>
-                                🔧 RCT (7,500)
+                            <button class="btn btn-outline-warning" type="button" @onclick="AddRCT">
+                                🔧 RCT <span class="badge bg-warning text-dark ms-1">7,500</span>
                             </button>
                         </div>
 
+                        @* Crown *@
                         <div class="col-auto">
                             <div class="dropdown">
-                                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     👑 Crown
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Crown", "PFM", 8000)'>PFM — PKR 8,000</a></li>
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Crown", "Zirconia", 21000)'>Zirconia — PKR 21,000</a></li>
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddProcedure("Crown", "E-max", 25000)'>E-max — PKR 25,000</a></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddCrownPFMB">PFM B — PKR 8,000</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddCrownPFMA">PFM A — PKR 10,000</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddCrownPFMA1">PFM A1 — PKR 12,000</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddCrownZirconium">Zirconium — PKR 21,000</button></li>
                                 </ul>
                             </div>
                         </div>
 
+                        @* Bridge *@
                         <div class="col-auto">
                             <div class="dropdown">
-                                <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
                                     🌉 Bridge
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddBridge("PFM", 8000)'>PFM — PKR 8,000/unit</a></li>
-                                    <li><a class="dropdown-item" href="#" @onclick='() => AddBridge("Zirconia", 21000)'>Zirconia — PKR 21,000/unit</a></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddBridgePFMB">PFM B — PKR 8,000/unit</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddBridgePFMA">PFM A — PKR 10,000/unit</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddBridgePFMA1">PFM A1 — PKR 12,000/unit</button></li>
+                                    <li><button class="dropdown-item" type="button" @onclick="AddBridgeZirconium">Zirconium — PKR 21,000/unit</button></li>
                                 </ul>
                             </div>
                         </div>
 
+                        @* Implant *@
                         <div class="col-auto">
-                            <button class="btn btn-info" @onclick='() => AddProcedure("Implant", "Dental Implant", 75000)'>
-                                🔩 Implant (75,000)
+                            <button class="btn btn-outline-dark" type="button" @onclick="AddImplant">
+                                🔩 Implant <span class="badge bg-dark ms-1">75,000</span>
                             </button>
                         </div>
 
+                        @* Scaling *@
                         <div class="col-auto">
-                            <button class="btn btn-secondary" @onclick='() => AddProcedure("Scaling", "Scaling", 6500)'>
-                                ✨ Scaling (6,500)
+                            <button class="btn btn-outline-info" type="button" @onclick="AddScaling">
+                                ✨ Scaling <span class="badge bg-info text-dark ms-1">6,500</span>
                             </button>
                         </div>
 
+                        @* Veneer *@
                         <div class="col-auto">
-                            <button class="btn btn-dark" @onclick='() => AddProcedure("Veneer", "Veneer", 28000)'>
-                                💎 Veneer (28,000)
+                            <button class="btn btn-outline-secondary" type="button" @onclick="AddVeneer">
+                                💎 Veneer <span class="badge bg-secondary ms-1">28,000</span>
                             </button>
                         </div>
+
+                        @* Denture *@
+                        <div class="col-auto">
+                            <button class="btn btn-outline-secondary" type="button" @onclick="AddDenture">
+                                😁 Denture <span class="badge bg-secondary ms-1">35,000</span>
+                            </button>
+                        </div>
+
                     </div>
+
+                    @if (!string.IsNullOrEmpty(procedureError))
+                    {
+                        <div class="alert alert-warning mt-2 py-1">@procedureError</div>
+                    }
                 </div>
             </div>
 
-            @* Current Treatment Plan Items *@
+            @* Current Plan Items *@
             @if (currentItems.Count > 0)
             {
                 <div class="card mb-4 border-primary" id="printArea">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold">Treatment Plan for @patientName</span>
-                        <div>
-                            <button class="btn btn-sm btn-light me-2" @onclick="PrintPlan">🖨️ Print</button>
-                            <button class="btn btn-sm btn-success" @onclick="SavePlan">💾 Save Plan</button>
-                        </div>
+                        <span class="fw-bold">Treatment Plan — @patientName</span>
+                        <button class="btn btn-sm btn-light" type="button" @onclick="PrintPlan">🖨️ Print</button>
                     </div>
                     <div class="card-body p-0">
                         <table class="table table-bordered mb-0">
@@ -215,92 +216,80 @@
                                     <th>Tooth/Teeth</th>
                                     <th>Procedure</th>
                                     <th>Variant</th>
-                                    <th>Base Price</th>
-                                    <th>Discount</th>
-                                    <th>Final Price</th>
-                                    <th>Action</th>
+                                    <th>Base Price (PKR)</th>
+                                    <th>Discount (PKR)</th>
+                                    <th>Final Price (PKR)</th>
+                                    <th>Remove</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @for (int i = 0; i < currentItems.Count; i++)
                                 {
                                     var item = currentItems[i];
-                                    var index = i;
                                     <tr>
                                         <td>@(i + 1)</td>
-                                        <td><strong>@item.ToothNumbers</strong></td>
+                                        <td>@item.ToothNumbers</td>
                                         <td>@item.Procedure</td>
                                         <td>@item.ProcedureVariant</td>
-                                        <td>PKR @item.BasePrice.ToString("N0")</td>
+                                        <td>@item.BasePrice.ToString("N0")</td>
                                         <td>
-                                            <input type="number"
-                                                   class="form-control form-control-sm"
-                                                   style="width: 100px"
-                                                   @bind="item.Discount"
-                                                   @bind:event="onchange"
-                                                   step="100" />
+                                            <input type="number" class="form-control form-control-sm"
+                                                   style="width:100px"
+                                                   value="@item.Discount"
+                                                   @onchange="e => UpdateDiscount(i, e.Value?.ToString())" />
                                         </td>
-                                        <td class="fw-bold text-success">PKR @item.FinalPrice.ToString("N0")</td>
+                                        <td class="fw-bold text-success">@item.FinalPrice.ToString("N0")</td>
                                         <td>
-                                            <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(index)">Remove</button>
+                                            <button class="btn btn-sm btn-danger" type="button" @onclick="() => RemoveItem(i)">✕</button>
                                         </td>
                                     </tr>
                                 }
                             </tbody>
-                            <tfoot class="table-secondary">
+                            <tfoot class="table-light">
                                 <tr>
-                                    <td colspan="4" class="text-end fw-bold">TOTAL:</td>
-                                    <td class="fw-bold">PKR @currentItems.Sum(i => i.BasePrice).ToString("N0")</td>
-                                    <td class="fw-bold text-danger">PKR @currentItems.Sum(i => i.Discount).ToString("N0")</td>
-                                    <td class="fw-bold text-success">PKR @currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
+                                    <td colspan="4" class="text-end fw-bold">Totals:</td>
+                                    <td class="fw-bold">@currentItems.Sum(i => i.BasePrice).ToString("N0")</td>
+                                    <td class="fw-bold text-danger">@currentItems.Sum(i => i.Discount).ToString("N0")</td>
+                                    <td class="fw-bold text-success">@currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
                         </table>
                     </div>
-                    <div class="card-footer">
-                        <button class="btn btn-outline-danger" @onclick="ClearPlan">🗑️ Clear All Items</button>
+                    <div class="card-footer d-flex gap-2">
+                        <button class="btn btn-success" type="button" @onclick="SavePlan">💾 Save Plan</button>
+                        <button class="btn btn-outline-danger" type="button" @onclick="ClearPlan">🗑️ Clear All</button>
                     </div>
                 </div>
 
                 @if (!string.IsNullOrEmpty(saveMessage))
                 {
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        @saveMessage
-                        <button type="button" class="btn-close" @onclick="() => saveMessage = null"></button>
-                    </div>
+                    <div class="alert alert-success">@saveMessage</div>
                 }
             }
 
-            @* Treatment History *@
+            @* History *@
             @if (history.Count > 0)
             {
                 <div class="card border-secondary">
-                    <div class="card-header bg-light fw-bold">
-                        📜 Treatment History - @patientName
-                    </div>
-                    <div class="card-body">
+                    <div class="card-header bg-light fw-bold">Treatment History — @patientName</div>
+                    <div class="card-body p-0">
                         @foreach (var plan in history)
                         {
-                            <div class="border rounded p-3 mb-3">
+                            <div class="border-bottom p-3">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <strong>Date:</strong> @plan.CreatedAt.ToString("dd MMM yyyy, hh:mm tt") |
-                                        <strong>Total:</strong> <span class="text-success">PKR @plan.Items.Sum(i => i.FinalPrice).ToString("N0")</span>
-                                    </div>
-                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePlan(plan.Id)">
-                                        Delete Plan
-                                    </button>
+                                    <span class="fw-bold text-secondary">@plan.CreatedAt.ToString("dd MMM yyyy — HH:mm")</span>
+                                    <button class="btn btn-sm btn-outline-danger" type="button" @onclick="() => DeletePlan(plan.Id)">Delete</button>
                                 </div>
-                                <table class="table table-sm table-bordered">
-                                    <thead>
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead class="table-light">
                                         <tr>
                                             <th>Tooth/Teeth</th>
                                             <th>Procedure</th>
                                             <th>Variant</th>
-                                            <th>Base Price</th>
-                                            <th>Discount</th>
-                                            <th>Final Price</th>
+                                            <th>Base (PKR)</th>
+                                            <th>Discount (PKR)</th>
+                                            <th>Final (PKR)</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -310,125 +299,88 @@
                                                 <td>@item.ToothNumbers</td>
                                                 <td>@item.Procedure</td>
                                                 <td>@item.ProcedureVariant</td>
-                                                <td>PKR @item.BasePrice.ToString("N0")</td>
-                                                <td>PKR @item.Discount.ToString("N0")</td>
-                                                <td class="fw-bold text-success">PKR @item.FinalPrice.ToString("N0")</td>
+                                                <td>@item.BasePrice.ToString("N0")</td>
+                                                <td>@item.Discount.ToString("N0")</td>
+                                                <td class="fw-bold text-success">@item.FinalPrice.ToString("N0")</td>
                                             </tr>
                                         }
                                     </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="3" class="text-end fw-bold">Total:</td>
+                                            <td class="fw-bold">@plan.Items.Sum(i => i.BasePrice).ToString("N0")</td>
+                                            <td class="fw-bold text-danger">@plan.Items.Sum(i => i.Discount).ToString("N0")</td>
+                                            <td class="fw-bold text-success">@plan.Items.Sum(i => i.FinalPrice).ToString("N0")</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         }
                     </div>
                 </div>
             }
+
         </div>
     </div>
 </div>
 
 <style>
-    .dental-chart {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 10px;
-    }
-    
-    .teeth-row {
-        margin-bottom: 30px;
-        text-align: center;
-    }
-    
-    .quadrant-label {
-        font-weight: bold;
-        margin-bottom: 10px;
-        color: #555;
-        font-size: 14px;
-        text-align: center;
-    }
-    
-    .teeth-group {
-        display: flex;
-        justify-content: center;
-        gap: 4px;
-        flex-wrap: wrap;
-    }
-    
     .tooth-wrapper {
-        cursor: pointer;
-        transition: transform 0.2s;
-    }
-    
-        .tooth-wrapper:hover {
-            transform: scale(1.1);
-        }
-    
-        .tooth-wrapper.selected .tooth-shape {
-            background: linear-gradient(135deg, #4CAF50, #45a049);
-            border-color: #2E7D32;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            color: white;
-        }
-    
-    .tooth-shape {
-        width: 50px;
-        height: 60px;
-        background: white;
-        border: 2px solid #6c757d;
-        border-radius: 40% 40% 30% 30%;
-        position: relative;
+        width: 45px;
+        height: 55px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        transition: all 0.2s;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        justify-content: flex-end;
+        cursor: pointer;
+        background: #fff;
+        transition: all 0.15s;
+        user-select: none;
+        position: relative;
     }
     
-    /* Upper teeth have two roots */
-    .tooth-upper {
-        border-radius: 30% 30% 40% 40%;
+    /* SVG Styling */
+    .tooth-wrapper svg {
+        width: 100%;
+        height: 40px;
+        fill: #e9ecef;
+        stroke: #6c757d;
+        stroke-width: 2;
+        transition: all 0.15s;
     }
-    
-    /* Lower teeth have single root */
-    .tooth-lower {
-        border-radius: 40% 40% 30% 30%;
+
+    .tooth-wrapper:hover {
+        background: #e8f5e9;
     }
-    
-    /* Molars (teeth 1-3, 14-19, 30-32) get special shapes */
-    .tooth-wrapper[data-type="molar"] .tooth-shape {
-        border-radius: 35% 35% 35% 35%;
+    .tooth-wrapper:hover svg {
+        stroke: #28a745;
+        fill: #d4edda;
     }
-    
-    .tooth-number {
-        font-size: 14px;
+
+    .tooth-selected {
+        background: #28a745 !important;
+    }
+    .tooth-selected svg {
+        stroke: #fff !important;
+        fill: #155724 !important;
+    }
+    .tooth-selected .tooth-num {
+        color: white !important;
+    }
+
+    .tooth-num {
+        font-size: 11px;
         font-weight: bold;
-        color: inherit;
+        color: #333;
+        margin-top: 2px;
     }
-    
-    .tooth-wrapper.selected .tooth-number {
-        color: white;
-    }
-    
+
     @@media print {
-        body * {
-            visibility: hidden;
-        }
-
-        #printArea, #printArea * {
-            visibility: visible;
-        }
-
-        #printArea {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .btn, .btn-close, .dropdown-toggle {
-            display: none !important;
-        }
+        body * { visibility: hidden; }
+        #printArea, #printArea * { visibility: visible; }
+        #printArea { position: absolute; left: 0; top: 0; width: 100%; }
+        .btn { display: none !important; }
+        input { border: none !important; }
     }
 </style>
 
@@ -438,36 +390,27 @@
     private List<int> selectedTeeth = new();
     private List<TreatmentPlanItem> currentItems = new();
     private List<TreatmentPlan> history = new();
-    private string? procedureError;
-    private string? saveMessage;
+    private string procedureError = "";
+    private string saveMessage = "";
 
-    // Universal Tooth Numbering System (1-32)
-    private List<int> upperRight = new() { 1, 2, 3, 4, 5, 6, 7, 8 };
-    private List<int> upperLeft = new() { 9, 10, 11, 12, 13, 14, 15, 16 };
-    private List<int> lowerRight = new() { 32, 31, 30, 29, 28, 27, 26, 25 };
-    private List<int> lowerLeft = new() { 17, 18, 19, 20, 21, 22, 23, 24 };
+    private List<int> upperRight = new() { 18, 17, 16, 15, 14, 13, 12, 11 };
+    private List<int> upperLeft  = new() { 21, 22, 23, 24, 25, 26, 27, 28 };
+    private List<int> lowerRight = new() { 48, 47, 46, 45, 44, 43, 42, 41 };
+    private List<int> lowerLeft  = new() { 31, 32, 33, 34, 35, 36, 37, 38 };
 
     protected override async Task OnInitializedAsync()
-    {
-        await LoadPatients();
-        await LoadPatientHistory();
-    }
-
-    private async Task LoadPatients()
     {
         patients = await PatientService.GetAllPatientsAsync();
     }
 
-    private async Task LoadPatientHistory()
+    private async Task OnPatientSelected(ChangeEventArgs e)
     {
-        saveMessage = null;
+        patientName = e.Value?.ToString() ?? "";
+        history = new();
+        saveMessage = "";
         if (!string.IsNullOrWhiteSpace(patientName))
         {
             history = await TreatmentPlanService.GetByPatientAsync(patientName);
-        }
-        else
-        {
-            history = new List<TreatmentPlan>();
         }
     }
 
@@ -477,62 +420,55 @@
             selectedTeeth.Remove(tooth);
         else
             selectedTeeth.Add(tooth);
-        
-        procedureError = null;
-        StateHasChanged();
+        procedureError = "";
     }
 
-    private void ClearTeeth()
-    {
-        selectedTeeth.Clear();
-        StateHasChanged();
-    }
+    private void ClearTeeth() => selectedTeeth.Clear();
 
     private void AddProcedure(string procedure, string variant, decimal basePrice)
     {
-        // Validation
-        if (string.IsNullOrWhiteSpace(patientName))
-        {
-            procedureError = "❌ Please select a patient first!";
-            return;
-        }
-
+        procedureError = "";
         if (selectedTeeth.Count == 0)
         {
-            procedureError = "❌ Please select at least one tooth first!";
+            procedureError = "Please select at least one tooth first.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(patientName))
+        {
+            procedureError = "Please select a patient first.";
             return;
         }
 
-        // Group teeth by procedure (one row per tooth)
-        foreach (var tooth in selectedTeeth.OrderBy(t => t))
+        var toothNumbers = string.Join(", ", selectedTeeth.OrderBy(t => t));
+        var totalPrice = basePrice * selectedTeeth.Count;
+        var displayVariant = variant;
+        if (selectedTeeth.Count > 1)
         {
-            currentItems.Add(new TreatmentPlanItem
-            {
-                ToothNumbers = tooth.ToString(),
-                Procedure = procedure,
-                ProcedureVariant = variant,
-                BasePrice = basePrice,
-                Discount = 0
-            });
+            displayVariant = $"{variant} ({selectedTeeth.Count} units)";
         }
 
-        // Clear selection after adding
+        currentItems.Add(new TreatmentPlanItem
+        {
+            ToothNumbers = toothNumbers,
+            Procedure = procedure,
+            ProcedureVariant = displayVariant,
+            BasePrice = totalPrice,
+            Discount = 0
+        });
         selectedTeeth.Clear();
-        procedureError = null;
-        StateHasChanged();
     }
 
     private void AddBridge(string variant, decimal pricePerUnit)
     {
-        if (string.IsNullOrWhiteSpace(patientName))
-        {
-            procedureError = "❌ Please select a patient first!";
-            return;
-        }
-
+        procedureError = "";
         if (selectedTeeth.Count < 2)
         {
-            procedureError = "❌ Please select at least 2 teeth for a bridge!";
+            procedureError = "Please select at least 2 teeth for a bridge.";
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(patientName))
+        {
+            procedureError = "Please select a patient first.";
             return;
         }
 
@@ -548,84 +484,115 @@
             BasePrice = totalPrice,
             Discount = 0
         });
-
         selectedTeeth.Clear();
-        procedureError = null;
-        StateHasChanged();
     }
+
+    // Helper Methods to fix syntax errors in HTML attributes
+    private void AddExtraction() => AddProcedure("Extraction", "Extraction", 2500);
+    private void AddRCT() => AddProcedure("RCT", "RCT", 7500);
+    private void AddImplant() => AddProcedure("Implant", "Implant", 75000);
+    private void AddScaling() => AddProcedure("Scaling", "Scaling", 6500);
+    private void AddVeneer() => AddProcedure("Veneer", "Veneer", 28000);
+    private void AddDenture() => AddProcedure("Denture", "Denture", 35000);
+
+    private void AddFillingComposite() => AddProcedure("Filling", "Composite", 2500);
+    private void AddFillingGlassIonomer() => AddProcedure("Filling", "Glass Ionomer", 3500);
+    private void AddFillingCeramic() => AddProcedure("Filling", "Ceramic", 4500);
+
+    private void AddCrownPFMB() => AddProcedure("Crown", "PFM B", 8000);
+    private void AddCrownPFMA() => AddProcedure("Crown", "PFM A", 10000);
+    private void AddCrownPFMA1() => AddProcedure("Crown", "PFM A1", 12000);
+    private void AddCrownZirconium() => AddProcedure("Crown", "Zirconium", 21000);
+
+    private void AddBridgePFMB() => AddBridge("PFM B", 8000);
+    private void AddBridgePFMA() => AddBridge("PFM A", 10000);
+    private void AddBridgePFMA1() => AddBridge("PFM A1", 12000);
+    private void AddBridgeZirconium() => AddBridge("Zirconium", 21000);
 
     private void RemoveItem(int index)
     {
         if (index >= 0 && index < currentItems.Count)
-        {
             currentItems.RemoveAt(index);
-            StateHasChanged();
-        }
+    }
+
+    private void UpdateDiscount(int index, string value)
+    {
+        if (decimal.TryParse(value, out decimal discount))
+            currentItems[index].Discount = discount;
     }
 
     private void ClearPlan()
     {
         currentItems.Clear();
-        saveMessage = null;
-        StateHasChanged();
+        saveMessage = "";
     }
 
     private async Task SavePlan()
     {
         if (string.IsNullOrWhiteSpace(patientName))
         {
-            procedureError = "❌ Please select a patient first!";
+            procedureError = "Please select a patient first.";
             return;
         }
+        if (currentItems.Count == 0) return;
 
-        if (currentItems.Count == 0)
+        var plan = new TreatmentPlan
         {
-            procedureError = "❌ No treatment items to save!";
-            return;
-        }
-
-        try
-        {
-            var plan = new TreatmentPlan
+            PatientName = patientName,
+            Items = currentItems.Select(i => new TreatmentPlanItem
             {
-                PatientName = patientName,
-                CreatedAt = DateTime.UtcNow,
-                Items = currentItems.Select(i => new TreatmentPlanItem
-                {
-                    ToothNumbers = i.ToothNumbers,
-                    Procedure = i.Procedure,
-                    ProcedureVariant = i.ProcedureVariant,
-                    BasePrice = i.BasePrice,
-                    Discount = i.Discount
-                }).ToList()
-            };
+                ToothNumbers = i.ToothNumbers,
+                Procedure = i.Procedure,
+                ProcedureVariant = i.ProcedureVariant,
+                BasePrice = i.BasePrice,
+                Discount = i.Discount
+            }).ToList()
+        };
 
-            await TreatmentPlanService.SavePlanAsync(plan);
-            saveMessage = $"✅ Treatment plan saved successfully! Total: PKR {currentItems.Sum(i => i.FinalPrice).ToString("N0")}";
-            
-            // Clear current items and refresh history
-            currentItems.Clear();
-            await LoadPatientHistory();
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            procedureError = $"❌ Error saving plan: {ex.Message}";
-        }
+        await TreatmentPlanService.SavePlanAsync(plan);
+        saveMessage = "Treatment plan saved successfully!";
+        currentItems.Clear();
+        history = await TreatmentPlanService.GetByPatientAsync(patientName);
     }
 
     private async Task DeletePlan(int id)
     {
-        if (await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this treatment plan?"))
-        {
-            await TreatmentPlanService.DeletePlanAsync(id);
-            await LoadPatientHistory();
-            StateHasChanged();
-        }
+        await TreatmentPlanService.DeletePlanAsync(id);
+        history = await TreatmentPlanService.GetByPatientAsync(patientName);
     }
 
     private async Task PrintPlan()
     {
         await JS.InvokeVoidAsync("print");
+    }
+
+    // Anatomical Shape Generator
+    private string GetToothSvg(int tooth)
+    {
+        int lastDigit = tooth % 10;
+        string path = "";
+
+        if (lastDigit >= 6 && lastDigit <= 8)
+        {
+            // Molar
+            path = "M 5,5 L 43,5 L 40,40 C 40,45 30,48 21,48 C 12,48 2,45 2,40 Z M 10,5 L 10,2 M 21,5 L 21,2 M 32,5 L 32,2";
+        }
+        else if (lastDigit == 4 || lastDigit == 5)
+        {
+            // Premolar
+            path = "M 8,2 L 40,2 L 38,40 C 38,45 28,46 21,46 C 14,46 4,45 4,40 Z M 14,2 L 14,0 M 28,2 L 28,0";
+        }
+        else if (lastDigit == 3)
+        {
+            // Canine
+            path = "M 12,2 L 35,2 L 30,42 C 30,48 12,48 12,42 Z M 12,2 L 6,0 M 35,2 L 41,0";
+        }
+        else
+        {
+            // Incisor
+            path = "M 12,2 L 36,2 C 36,40 30,46 24,46 C 18,46 12,40 12,2 Z M 12,2 L 8,0 M 36,2 L 40,0";
+        }
+
+        return $"<svg viewBox='0 0 44 50'>{path}</svg>";
     }
 }
