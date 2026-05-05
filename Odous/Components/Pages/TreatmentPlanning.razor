@@ -122,15 +122,18 @@
 
                         @* Filling — 3 variants *@
                         <div class="col-auto">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <div class="dropdown" @onmouseleave="() => showFillingDropdown = false">
+                                <button class="btn btn-outline-primary dropdown-toggle" type="button" @onclick="() => showFillingDropdown = !showFillingDropdown">
                                     🪥 Filling
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Filling", "Composite", 2500)'>Composite — PKR 2,500</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Filling", "Glass Ionomer", 3500)'>Glass Ionomer — PKR 3,500</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Filling", "Ceramic", 4500)'>Ceramic — PKR 4,500</button></li>
-                                </ul>
+                                @if (showFillingDropdown)
+                                {
+                                    <ul class="dropdown-menu show" style="position: absolute; display: block;">
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Filling", "Composite", 2500); showFillingDropdown = false; }'>Composite — PKR 2,500</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Filling", "Glass Ionomer", 3500); showFillingDropdown = false; }'>Glass Ionomer — PKR 3,500</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Filling", "Ceramic", 4500); showFillingDropdown = false; }'>Ceramic — PKR 4,500</button></li>
+                                    </ul>
+                                }
                             </div>
                         </div>
 
@@ -143,31 +146,37 @@
 
                         @* Crown — 4 variants *@
                         <div class="col-auto">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <div class="dropdown" @onmouseleave="() => showCrownDropdown = false">
+                                <button class="btn btn-outline-success dropdown-toggle" type="button" @onclick="() => showCrownDropdown = !showCrownDropdown">
                                     👑 Crown
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Crown", "PFM B", 8000)'>PFM B — PKR 8,000</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Crown", "PFM A", 10000)'>PFM A — PKR 10,000</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Crown", "PFM A1", 12000)'>PFM A1 — PKR 12,000</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddProcedure("Crown", "Zirconium", 21000)'>Zirconium — PKR 21,000</button></li>
-                                </ul>
+                                @if (showCrownDropdown)
+                                {
+                                    <ul class="dropdown-menu show" style="position: absolute; display: block;">
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Crown", "PFM B", 8000); showCrownDropdown = false; }'>PFM B — PKR 8,000</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Crown", "PFM A", 10000); showCrownDropdown = false; }'>PFM A — PKR 10,000</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Crown", "PFM A1", 12000); showCrownDropdown = false; }'>PFM A1 — PKR 12,000</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddProcedure("Crown", "Zirconium", 21000); showCrownDropdown = false; }'>Zirconium — PKR 21,000</button></li>
+                                    </ul>
+                                }
                             </div>
                         </div>
 
-                        @* Bridge — same tiers as crown, auto-calculates units *@
+                        @* Bridge — 4 variants *@
                         <div class="col-auto">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <div class="dropdown" @onmouseleave="() => showBridgeDropdown = false">
+                                <button class="btn btn-outline-success dropdown-toggle" type="button" @onclick="() => showBridgeDropdown = !showBridgeDropdown">
                                     🌉 Bridge
                                 </button>
-                                <ul class="dropdown-menu">
-                                    <li><button class="dropdown-item" @onclick='() => AddBridge("PFM B", 8000)'>PFM B — PKR 8,000/unit</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddBridge("PFM A", 10000)'>PFM A — PKR 10,000/unit</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddBridge("PFM A1", 12000)'>PFM A1 — PKR 12,000/unit</button></li>
-                                    <li><button class="dropdown-item" @onclick='() => AddBridge("Zirconium", 21000)'>Zirconium — PKR 21,000/unit</button></li>
-                                </ul>
+                                @if (showBridgeDropdown)
+                                {
+                                    <ul class="dropdown-menu show" style="position: absolute; display: block;">
+                                        <li><button class="dropdown-item" @onclick='() => { AddBridge("PFM B", 8000); showBridgeDropdown = false; }'>PFM B — PKR 8,000/unit</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddBridge("PFM A", 10000); showBridgeDropdown = false; }'>PFM A — PKR 10,000/unit</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddBridge("PFM A1", 12000); showBridgeDropdown = false; }'>PFM A1 — PKR 12,000/unit</button></li>
+                                        <li><button class="dropdown-item" @onclick='() => { AddBridge("Zirconium", 21000); showBridgeDropdown = false; }'>Zirconium — PKR 21,000/unit</button></li>
+                                    </ul>
+                                }
                             </div>
                         </div>
 
@@ -333,47 +342,6 @@
     </div>
 </div>
 
-<style>
-    .tooth-wrapper {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        cursor: pointer;
-    }
-    .tooth-svg {
-        width: 42px;
-        height: 52px;
-        fill: #fff;
-        stroke: #6c757d;
-        stroke-width: 2;
-        transition: all 0.15s;
-    }
-    .tooth-svg:hover {
-        fill: #e8f5e9;
-        stroke: #28a745;
-    }
-    .tooth-selected {
-        fill: #28a745 !important;
-        stroke: #155724 !important;
-    }
-    .tooth-selected .tooth-num {
-        color: white !important;
-    }
-    .tooth-num {
-        font-size: 11px;
-        font-weight: bold;
-        margin-top: 2px;
-        color: #333;
-    }
-    @@media print {
-        body * { visibility: hidden; }
-        #printArea, #printArea * { visibility: visible; }
-        #printArea { position: absolute; left: 0; top: 0; width: 100%; }
-        .btn { display: none !important; }
-        input { border: none !important; }
-    }
-</style>
-
 @code {
     private List<Patient> patients = new();
     private string patientName = "";
@@ -383,10 +351,14 @@
     private string procedureError = "";
     private string saveMessage = "";
 
+    private bool showFillingDropdown = false;
+    private bool showCrownDropdown = false;
+    private bool showBridgeDropdown = false;
+
     private List<int> upperRight = new() { 18, 17, 16, 15, 14, 13, 12, 11 };
-    private List<int> upperLeft  = new() { 21, 22, 23, 24, 25, 26, 27, 28 };
+    private List<int> upperLeft = new() { 21, 22, 23, 24, 25, 26, 27, 28 };
     private List<int> lowerRight = new() { 48, 47, 46, 45, 44, 43, 42, 41 };
-    private List<int> lowerLeft  = new() { 31, 32, 33, 34, 35, 36, 37, 38 };
+    private List<int> lowerLeft = new() { 31, 32, 33, 34, 35, 36, 37, 38 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -470,8 +442,8 @@
             return;
         }
 
-        var existingItem = currentItems.FirstOrDefault(i => 
-            i.Procedure == procedure && 
+        var existingItem = currentItems.FirstOrDefault(i =>
+            i.Procedure == procedure &&
             i.ProcedureVariant == variant &&
             i.BasePrice == basePrice);
 
