@@ -2,6 +2,7 @@ using Odous.Components;
 using Odous.Data;
 using Odous.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;  // Add this
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,7 @@ var connectionString = builder.Configuration.GetConnectionString("PostgresConnec
 Console.WriteLine($"Using database connection");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+    options.UseNpgsql(connectionString));  // This should now work
 
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
