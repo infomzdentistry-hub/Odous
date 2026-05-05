@@ -40,12 +40,7 @@
         </div>
         
         <div class="nav-item px-3 mt-4 pt-3 border-top">
-            <div class="d-flex justify-content-between align-items-center">
-                <span class="small text-muted">
-                    <i class="bi bi-person-circle"></i> @GetCurrentUser()
-                </span>
-                <Odous.Components.Layout.LogoutButton />
-            </div>
+            <button class="btn btn-outline-danger btn-sm w-100" @onclick="Logout">Logout</button>
         </div>
     </nav>
 </div>
@@ -58,11 +53,12 @@
         collapseNavMenu = !collapseNavMenu;
     }
     
-    [Inject]
-    private Odous.Services.AuthService? AuthService { get; set; }
+    [Inject] private Odous.Services.AuthService? AuthService { get; set; }
+    [Inject] private NavigationManager? Navigation { get; set; }
     
-    private string GetCurrentUser()
+    private void Logout()
     {
-        return AuthService?.GetCurrentUser() ?? "Guest";
+        AuthService?.Logout();
+        Navigation?.NavigateTo("/login", true);
     }
 }

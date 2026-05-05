@@ -1,5 +1,4 @@
 ﻿@page "/login"
-@using Odous.Models
 @using Odous.Services
 @inject AuthService AuthService
 @inject NavigationManager Navigation
@@ -16,50 +15,29 @@
                     </div>
                 </div>
                 <div class="card-body p-4">
-                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                <i class="bi bi-person"></i> Username
-                            </label>
-                            <InputText @bind-Value="loginModel.Username" class="form-control form-control-lg" placeholder="Enter username" />
-                            <ValidationMessage For="@(() => loginModel.Username)" />
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Username</label>
+                        <input @bind="username" class="form-control form-control-lg" placeholder="Enter username" />
+                    </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">
-                                <i class="bi bi-key"></i> Password
-                            </label>
-                            <InputText @bind-Value="loginModel.Password" type="password" class="form-control form-control-lg" placeholder="Enter password" />
-                            <ValidationMessage For="@(() => loginModel.Password)" />
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Password</label>
+                        <input @bind="password" type="password" class="form-control form-control-lg" placeholder="Enter password" />
+                    </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg" disabled="@isLoggingIn">
-                                @if (isLoggingIn)
-                                {
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    <span>Logging in...</span>
-                                }
-                                else
-                                {
-                                    <i class="bi bi-box-arrow-in-right"></i>
-                                    <span> Login</span>
-                                }
-                            </button>
-                        </div>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg" @onclick="HandleLogin">Login</button>
+                    </div>
 
-                        @if (!string.IsNullOrEmpty(errorMessage))
-                        {
-                            <div class="alert alert-danger mt-3 text-center">
-                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                                @errorMessage
-                            </div>
-                        }
-                    </EditForm>
+                    @if (!string.IsNullOrEmpty(errorMessage))
+                    {
+                        <div class="alert alert-danger mt-3 text-center">
+                            @errorMessage
+                        </div>
+                    }
                 </div>
                 <div class="card-footer bg-light rounded-bottom-4 text-center py-3">
                     <small class="text-muted">
-                        <i class="bi bi-info-circle"></i>
                         Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
                     </small>
                 </div>
@@ -72,29 +50,16 @@
     .bg-gradient-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-
-    .card {
-        transition: transform 0.3s ease;
-    }
-
-        .card:hover {
-            transform: translateY(-5px);
-        }
 </style>
 
 @code {
-    private LoginModel loginModel = new LoginModel();
+    private string username = "";
+    private string password = "";
     private string errorMessage = "";
-    private bool isLoggingIn = false;
 
-    private async Task HandleLogin()
+    private void HandleLogin()
     {
-        isLoggingIn = true;
-        errorMessage = "";
-
-        await Task.Delay(500); // Simulate async operation
-
-        if (AuthService.Login(loginModel.Username, loginModel.Password))
+        if (AuthService.Login(username, password))
         {
             Navigation.NavigateTo("/", true);
         }
@@ -102,7 +67,5 @@
         {
             errorMessage = "Invalid username or password. Please try again.";
         }
-
-        isLoggingIn = false;
     }
 }

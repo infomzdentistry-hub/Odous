@@ -1,7 +1,4 @@
-﻿@inject Odous.Services.AuthService AuthService
-@inject NavigationManager Navigation
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -14,25 +11,7 @@
     <HeadOutlet />
 </head>
 <body>
-    @if (AuthService.IsLoggedIn())
-    {
-        <Routes @rendermode="InteractiveServer" />
-    }
-    else
-    {
-        <Routes @rendermode="InteractiveServer" />
-    }
+    <Routes @rendermode="InteractiveServer" />
     <script src="_framework/blazor.web.js"></script>
 </body>
 </html>
-
-@code {
-    protected override void OnInitialized()
-    {
-        var currentUri = Navigation.Uri;
-        if (!AuthService.IsLoggedIn() && !currentUri.Contains("/login"))
-        {
-            Navigation.NavigateTo("/login");
-        }
-    }
-}

@@ -4,7 +4,6 @@ namespace Odous.Services
 {
     public class AuthService
     {
-        // In-memory user store (you can add more users)
         private static List<UserCredentials> _users = new List<UserCredentials>
         {
             new UserCredentials { Username = "admin", Password = "admin123", Role = "Admin" },
@@ -38,15 +37,6 @@ namespace Odous.Services
         public string? GetCurrentUser()
         {
             return _currentUser;
-        }
-
-        public bool RegisterUser(string username, string password, string role)
-        {
-            if (_users.Any(u => u.Username == username))
-                return false;
-
-            _users.Add(new UserCredentials { Username = username, Password = password, Role = role });
-            return true;
         }
     }
 }

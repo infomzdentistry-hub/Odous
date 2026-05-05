@@ -5,10 +5,52 @@
 
 @if (!AuthService.IsLoggedIn())
 {
-    Navigation.NavigateTo("/login");
+    Navigation.NavigateTo("/login", true);
     return;
 }
 
-<h1>Welcome to Odous Dental Clinic</h1>
-<p>@AuthService.GetCurrentUser()</p>
-<!-- rest of your home page content -->
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="alert alert-success">
+                <h4>Welcome to Odous Dental Clinic</h4>
+                <p>You are logged in as: <strong>@AuthService.GetCurrentUser()</strong></p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-person-plus-fill fs-1"></i>
+                    <h5 class="card-title">Patient Management</h5>
+                    <p class="card-text">Add, view, and manage patient records</p>
+                    <a href="/addpatient" class="btn btn-primary">Go to Patients</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-calendar-plus-fill fs-1"></i>
+                    <h5 class="card-title">Appointments</h5>
+                    <p class="card-text">Schedule and manage appointments</p>
+                    <a href="/addappointment" class="btn btn-success">Go to Appointments</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-bar-chart-fill fs-1"></i>
+                    <h5 class="card-title">Dashboard</h5>
+                    <p class="card-text">View clinic statistics</p>
+                    <a href="/patients" class="btn btn-info">View Stats</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
