@@ -5,505 +5,306 @@
 @inject TreatmentPlanService TreatmentPlanService
 @inject IJSRuntime JS
 
-<div class="tp-wrapper">
-
-    @* ── TOP BAR ── *@
-    <div class="tp-topbar">
-        <div class="tp-topbar-left">
-            <input class="tp-patient-input"
-                   list="patientList"
-                   value="@patientName"
-                   placeholder="🔍 Search or select patient..."
-                   @onchange="OnPatientSelected" />
-            <datalist id="patientList">
-                @foreach (var p in patients)
-                {
-                    <option value="@p.Name" />
-                }
-            </datalist>
-            @if (!string.IsNullOrEmpty(patientName))
-            {
-                <span class="tp-patient-badge">@patientName</span>
-            }
+<div class="container-fluid mt-4">
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h3>🦷 Treatment Planning</h3>
         </div>
-        <div class="tp-topbar-right">
-            @if (!string.IsNullOrEmpty(saveMessage))
-            {
-                <span class="tp-save-msg">✅ @saveMessage</span>
-            }
-            @if (!string.IsNullOrEmpty(procedureError))
-            {
-                <span class="tp-error-msg">⚠️ @procedureError</span>
-            }
-        </div>
-    </div>
+        <div class="card-body">
 
-    @* ── DENTAL CHART ── *@
-    <div class="tp-chart-area">
-        <div class="tp-chart-label-row">
-            <span class="tp-chart-label">Upper Right</span>
-            <span class="tp-chart-label">Upper Left</span>
-        </div>
-        <div class="tp-teeth-row">
-            @foreach (var tooth in upperRight)
-            {
-                var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
-                    <svg viewBox="0 0 40 70" class="tp-tooth-svg">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
-                    </svg>
-                    <span class="tp-tooth-num">@tooth</span>
-                </div>
-            }
-            <div class="tp-midline"></div>
-            @foreach (var tooth in upperLeft)
-            {
-                var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
-                    <svg viewBox="0 0 40 70" class="tp-tooth-svg">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
-                    </svg>
-                    <span class="tp-tooth-num">@tooth</span>
-                </div>
-            }
-        </div>
-
-        <div class="tp-teeth-row tp-lower-row">
-            @foreach (var tooth in lowerRight)
-            {
-                var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
-                    <span class="tp-tooth-num">@tooth</span>
-                    <svg viewBox="0 0 40 70" class="tp-tooth-svg tp-tooth-svg-flipped">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
-                    </svg>
-                </div>
-            }
-            <div class="tp-midline"></div>
-            @foreach (var tooth in lowerLeft)
-            {
-                var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
-                    <span class="tp-tooth-num">@tooth</span>
-                    <svg viewBox="0 0 40 70" class="tp-tooth-svg tp-tooth-svg-flipped">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
-                    </svg>
-                </div>
-            }
-        </div>
-        <div class="tp-chart-label-row">
-            <span class="tp-chart-label">Lower Right</span>
-            <span class="tp-chart-label">Lower Left</span>
-        </div>
-
-        @if (selectedTeeth.Count > 0)
-        {
-            <div class="tp-selected-bar">
-                <span>Selected: <strong>@string.Join(", ", selectedTeeth.OrderBy(t => t))</strong></span>
-                <button class="tp-clear-btn" @onclick="ClearTeeth">✕ Clear</button>
-            </div>
-        }
-    </div>
-
-    @* ── MAIN BODY: LEFT PANELS + RIGHT TABLE ── *@
-    <div class="tp-body">
-
-        @* LEFT PANELS *@
-        <div class="tp-panels">
-
-            @* Row 1: Extraction + Filling *@
-            <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-extraction">
-                    <div class="tp-panel-title">EXTRACTION/S</div>
-                    <div class="tp-panel-field">
-                        <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>Procedure Price</label>
-                        <select @bind="extractionPrice" class="tp-select">
-                            <option value="2500">2500</option>
-                            <option value="3000">3000</option>
-                            <option value="3500">3500</option>
-                        </select>
-                    </div>
-                    <button class="tp-add-btn" @onclick='() => AddProcedure("Extraction", "Extraction", extractionPrice)'>+ Add</button>
-                </div>
-
-                <div class="tp-panel tp-panel-filling">
-                    <div class="tp-panel-title">FILLING/S</div>
-                    <div class="tp-panel-field">
-                        <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>Procedure Price</label>
-                        <select @bind="fillingPrice" class="tp-select">
-                            <option value="2500">2500 — Composite</option>
-                            <option value="3500">3500 — Glass Ionomer</option>
-                            <option value="4500">4500 — Ceramic</option>
-                        </select>
-                    </div>
-                    <button class="tp-add-btn" @onclick='() => AddFillingProcedure()'>+ Add</button>
-                </div>
-            </div>
-
-            @* Row 2: RCT + Crown/Bridge *@
-            <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-rct">
-                    <div class="tp-panel-title">RCT/S</div>
-                    <div class="tp-panel-field">
-                        <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>Procedure Price</label>
-                        <select @bind="rctPrice" class="tp-select">
-                            <option value="7500">7500</option>
-                            <option value="8500">8500 — Re-Endo</option>
-                            <option value="11500">11500 — Re-Endo (Complex)</option>
-                        </select>
-                    </div>
-                    <button class="tp-add-btn" @onclick='() => AddProcedure("RCT", "RCT", rctPrice)'>+ Add</button>
-                </div>
-
-                <div class="tp-panel tp-panel-crown">
-                    <div class="tp-panel-title">CROWN/BRIDGE</div>
-                    <div class="tp-panel-field">
-                        <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>Procedure Price</label>
-                        <select @bind="crownPrice" class="tp-select">
-                            <option value="8000">8000 — PFM B</option>
-                            <option value="10000">10000 — PFM A</option>
-                            <option value="12000">12000 — PFM A1</option>
-                            <option value="21000">21000 — Zirconium</option>
-                        </select>
-                    </div>
-                    <div class="tp-panel-crown-btns">
-                        <button class="tp-add-btn" @onclick="AddCrownProcedure">+ Crown</button>
-                        <button class="tp-add-btn tp-add-btn-alt" @onclick="AddBridgeProcedure">+ Bridge</button>
-                    </div>
-                </div>
-            </div>
-
-            @* Row 3: Implant + Extra Procedures *@
-            <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-implant">
-                    <div class="tp-panel-title">IMPLANT/S</div>
-                    <div class="tp-panel-field">
-                        <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
-                    </div>
-                    <div class="tp-panel-field">
-                        <label>Procedure Price</label>
-                        <select @bind="implantPrice" class="tp-select">
-                            <option value="75000">75000</option>
-                            <option value="85000">85000</option>
-                            <option value="95000">95000</option>
-                        </select>
-                    </div>
-                    <button class="tp-add-btn" @onclick='() => AddProcedure("Implant", "Implant", implantPrice)'>+ Add</button>
-                </div>
-
-                <div class="tp-panel tp-panel-extra">
-                    <button class="tp-extra-btn tp-extra-reendo" @onclick='() => AddFixedProcedure("Re-Endo Treatment", 11500)'>Re-Endo</button>
-                    <button class="tp-extra-btn tp-extra-braces" @onclick='() => AddFixedProcedure("Fixed Braces", 85000)'>Fixed Braces</button>
-                    <button class="tp-extra-btn tp-extra-scaling" @onclick='() => AddFixedProcedure("Scaling & Polishing", 6500)'>Scaling &amp; Polishing</button>
-                    <button class="tp-extra-btn tp-extra-sinus" @onclick='() => AddFixedProcedure("Sinus Lift", 45000)'>Sinus Lift</button>
-                    <button class="tp-extra-btn tp-extra-bone" @onclick='() => AddFixedProcedure("Bone Graft", 35000)'>Bone Graft</button>
-                </div>
-            </div>
-
-            @* Bottom Action Buttons *@
-            <div class="tp-action-row">
-                <button class="tp-action-btn tp-btn-save" @onclick="SavePlan">💾 Save</button>
-                <button class="tp-action-btn tp-btn-print" @onclick="PrintPlan">🖨️ Print</button>
-                <button class="tp-action-btn tp-btn-clear" @onclick="ClearPlan">🗑️ Clear</button>
-            </div>
-
-        </div>
-
-        @* RIGHT TABLE *@
-        <div class="tp-table-area">
-
-            @* Treatment Table *@
-            <div class="tp-table-wrapper" id="printArea">
-                <table class="tp-table">
-                    <thead>
-                        <tr>
-                            <th>Teeth Involved</th>
-                            <th>Procedure</th>
-                            <th>Price Per</th>
-                            <th>No. of Teeth</th>
-                            <th>Total Price</th>
-                            <th>Discount %</th>
-                            <th>After Discount</th>
-                            <th class="no-print">✕</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < currentItems.Count; i++)
+            @* Patient Selection *@
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Patient Name</label>
+                    <input class="form-control"
+                           list="patientList"
+                           @bind="patientName"
+                           @bind:event="oninput"
+                           placeholder="Type or select patient..." />
+                    <datalist id="patientList">
+                        @foreach (var p in patients)
                         {
-                            var item = currentItems[i];
-                            var index = i;
-                            <tr class="@(index % 2 == 0 ? "tp-row-even" : "tp-row-odd")">
-                                <td>@item.ToothNumbers</td>
-                                <td>@item.Procedure @item.ProcedureVariant</td>
-                                <td>@item.PricePerUnit.ToString("N0")</td>
-                                <td>@item.NumberOfTeeth</td>
-                                <td>@item.BasePrice.ToString("N0")</td>
-                                <td>
-                                    <input type="number" min="0" max="100"
-                                           class="tp-discount-input no-print"
-                                           value="@item.DiscountPercent"
-                                           @onchange="e => UpdateDiscount(index, e.Value?.ToString() ?? string.Empty)" />
-                                    <span class="print-only">@item.DiscountPercent%</span>
-                                </td>
-                                <td class="tp-final-price">@item.FinalPrice.ToString("N0")</td>
-                                <td class="no-print">
-                                    <button class="tp-del-btn" @onclick="() => RemoveItem(index)">✕</button>
-                                </td>
-                            </tr>
+                            <option value="@p.Name">@p.Name</option>
                         }
-                    </tbody>
-                    @if (currentItems.Count > 0)
+                    </datalist>
+                </div>
+                <div class="col-md-6">
+                    @if (!string.IsNullOrEmpty(patientName))
                     {
-                        <tfoot>
-                            <tr class="tp-totals-row">
-                                <td colspan="4" class="text-end">TOTAL</td>
-                                <td>@currentItems.Sum(i => i.BasePrice).ToString("N0")</td>
-                                <td></td>
-                                <td>@currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
-                                <td class="no-print"></td>
-                            </tr>
-                        </tfoot>
+                        <span class="badge bg-success mt-4">Selected: @patientName</span>
                     }
-                </table>
-
-                @if (currentItems.Count == 0)
-                {
-                    <div class="tp-empty">Select teeth and add procedures to begin</div>
-                }
+                    @if (!string.IsNullOrEmpty(saveMessage))
+                    {
+                        <span class="badge bg-info mt-4 ms-2">@saveMessage</span>
+                    }
+                    @if (!string.IsNullOrEmpty(procedureError))
+                    {
+                        <span class="badge bg-danger mt-4 ms-2">@procedureError</span>
+                    }
+                </div>
             </div>
 
-            @* Summary Box *@
+            @* Dental Chart *@
+            <div class="card mb-3">
+                <div class="card-header bg-light fw-bold">Dental Chart - Click teeth to select</div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <h6>Upper Right</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                                @foreach (var tooth in upperRight)
+                                {
+                                    <button type="button"
+                                            class="btn @(selectedTeeth.Contains(tooth) ? "btn-success" : "btn-outline-secondary")"
+                                            style="width: 50px;"
+                                            @onclick="() => ToggleTooth(tooth)">
+                                        @tooth
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <h6>Upper Left</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2 mb-3">
+                                @foreach (var tooth in upperLeft)
+                                {
+                                    <button type="button"
+                                            class="btn @(selectedTeeth.Contains(tooth) ? "btn-success" : "btn-outline-secondary")"
+                                            style="width: 50px;"
+                                            @onclick="() => ToggleTooth(tooth)">
+                                        @tooth
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6 text-center">
+                            <h6>Lower Right</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                @foreach (var tooth in lowerRight)
+                                {
+                                    <button type="button"
+                                            class="btn @(selectedTeeth.Contains(tooth) ? "btn-success" : "btn-outline-secondary")"
+                                            style="width: 50px;"
+                                            @onclick="() => ToggleTooth(tooth)">
+                                        @tooth
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-6 text-center">
+                            <h6>Lower Left</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                @foreach (var tooth in lowerLeft)
+                                {
+                                    <button type="button"
+                                            class="btn @(selectedTeeth.Contains(tooth) ? "btn-success" : "btn-outline-secondary")"
+                                            style="width: 50px;"
+                                            @onclick="() => ToggleTooth(tooth)">
+                                        @tooth
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (selectedTeeth.Count > 0)
+                    {
+                        <div class="mt-3 text-center">
+                            <span class="fw-bold">Selected: @string.Join(", ", selectedTeeth.OrderBy(t => t))</span>
+                            <button class="btn btn-sm btn-secondary ms-2" @onclick="ClearTeeth">Clear</button>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            @* Procedure Panels *@
+            <div class="row mb-3">
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-danger text-white">
+                        <div class="card-body">
+                            <h6>Extraction</h6>
+                            <select class="form-select form-select-sm mb-2" @bind="extractionPrice">
+                                <option value="2500">2,500 PKR</option>
+                                <option value="3500">3,500 PKR</option>
+                                <option value="4500">4,500 PKR</option>
+                            </select>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Extraction", extractionPrice)'>Add Extraction</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <h6>Filling</h6>
+                            <select class="form-select form-select-sm mb-2" @bind="fillingPrice">
+                                <option value="2500">Composite - 2,500</option>
+                                <option value="3500">Glass Ionomer - 3,500</option>
+                                <option value="4500">Ceramic - 4,500</option>
+                            </select>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Filling", fillingPrice)'>Add Filling</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-warning text-dark">
+                        <div class="card-body">
+                            <h6>RCT</h6>
+                            <select class="form-select form-select-sm mb-2" @bind="rctPrice">
+                                <option value="7500">7,500 PKR</option>
+                                <option value="8500">8,500 PKR</option>
+                                <option value="11500">11,500 PKR</option>
+                            </select>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("RCT", rctPrice)'>Add RCT</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <h6>Crown</h6>
+                            <select class="form-select form-select-sm mb-2" @bind="crownPrice">
+                                <option value="8000">PFM B - 8,000</option>
+                                <option value="10000">PFM A - 10,000</option>
+                                <option value="12000">PFM A1 - 12,000</option>
+                                <option value="21000">Zirconium - 21,000</option>
+                            </select>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Crown", crownPrice)'>Add Crown</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <h6>Implant</h6>
+                            <select class="form-select form-select-sm mb-2" @bind="implantPrice">
+                                <option value="75000">75,000 PKR</option>
+                                <option value="85000">85,000 PKR</option>
+                                <option value="95000">95,000 PKR</option>
+                            </select>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Implant", implantPrice)'>Add Implant</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card bg-secondary text-white">
+                        <div class="card-body">
+                            <h6>Other Procedures</h6>
+                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedure("Scaling & Polishing", 6500)'>Scaling (6,500)</button>
+                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedure("Veneer", 28000)'>Veneer (28,000)</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddFixedProcedure("Denture", 35000)'>Denture (35,000)</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="card bg-dark text-white">
+                        <div class="card-body">
+                            <h6>Actions</h6>
+                            <button class="btn btn-sm btn-warning me-2" @onclick="SavePlan">💾 Save Plan</button>
+                            <button class="btn btn-sm btn-info me-2" @onclick="PrintPlan">🖨️ Print</button>
+                            <button class="btn btn-sm btn-danger" @onclick="ClearPlan">🗑️ Clear All</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @* Treatment Plan Table *@
             @if (currentItems.Count > 0)
             {
-                <div class="tp-summary">
-                    <div class="tp-summary-row">
-                        <span>Actual Price</span>
-                        <strong>PKR @currentItems.Sum(i => i.BasePrice).ToString("N0")</strong>
+                <div class="card" id="printArea">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">Treatment Plan for @patientName</h6>
                     </div>
-                    <div class="tp-summary-row">
-                        <span>Total Discount</span>
-                        <strong class="tp-discount-text">PKR @currentItems.Sum(i => i.BasePrice - i.FinalPrice).ToString("N0")</strong>
-                    </div>
-                    <div class="tp-summary-row tp-summary-final">
-                        <span>After Discount Price</span>
-                        <strong class="tp-final-text">PKR @currentItems.Sum(i => i.FinalPrice).ToString("N0")</strong>
+                    <div class="card-body p-0">
+                        <table class="table table-bordered mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tooth</th>
+                                    <th>Procedure</th>
+                                    <th>Price/Unit</th>
+                                    <th>Discount %</th>
+                                    <th>Final Price</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < currentItems.Count; i++)
+                                {
+                                    var item = currentItems[i];
+                                    var index = i;
+                                    <tr>
+                                        <td>@(i + 1)</td>
+                                        <td>@item.ToothNumbers</td>
+                                        <td>@item.Procedure</td>
+                                        <td>@item.PricePerUnit.ToString("N0")</td>
+                                        <td>
+                                            <input type="number"
+                                                   class="form-control form-control-sm"
+                                                   style="width: 80px"
+                                                   @bind="item.DiscountPercent"
+                                                   @bind:event="onchange"
+                                                   min="0" max="100" />
+                                            %
+                                        </td>
+                                        <td class="fw-bold text-success">@item.FinalPrice.ToString("N0")</td>
+                                        <td>
+                                            <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(index)">Remove</button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-secondary">
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">TOTAL:</td>
+                                    <td class="fw-bold">@currentItems.Sum(i => i.PricePerUnit).ToString("N0")</td>
+                                    <td></td>
+                                    <td class="fw-bold text-success">@currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
                 </div>
             }
 
             @* History *@
-            @if (history.Count > 0)
+            @if (history.Count > 0 && !string.IsNullOrEmpty(patientName))
             {
-                <div class="tp-history">
-                    <div class="tp-history-title">Treatment History — @patientName</div>
-                    @foreach (var plan in history)
-                    {
-                        <div class="tp-history-plan">
-                            <div class="tp-history-header">
-                                <span>@plan.CreatedAt.ToString("dd MMM yyyy")</span>
-                                <button class="tp-del-btn" @onclick="() => DeletePlan(plan.Id)">Delete</button>
-                            </div>
-                            <table class="tp-table tp-table-sm">
-                                <thead>
-                                    <tr>
-                                        <th>Teeth</th>
-                                        <th>Procedure</th>
-                                        <th>Price/Unit</th>
-                                        <th>Qty</th>
-                                        <th>Total</th>
-                                        <th>Disc%</th>
-                                        <th>Final</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach (var item in plan.Items)
+                <div class="card mt-3">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Treatment History - @patientName</h6>
+                    </div>
+                    <div class="card-body">
+                        @foreach (var plan in history.OrderByDescending(p => p.CreatedAt))
+                        {
+                            <div class="border rounded p-2 mb-2">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">@plan.CreatedAt.ToString("dd MMM yyyy")</small>
+                                    <button class="btn btn-sm btn-outline-danger" @onclick="() => DeletePlan(plan.Id)">Delete</button>
+                                </div>
+                                <small>
+                                    @foreach (var item in plan.Items.Take(3))
                                     {
-                                        <tr>
-                                            <td>@item.ToothNumbers</td>
-                                            <td>@item.Procedure @item.ProcedureVariant</td>
-                                            <td>@item.PricePerUnit.ToString("N0")</td>
-                                            <td>@item.NumberOfTeeth</td>
-                                            <td>@item.BasePrice.ToString("N0")</td>
-                                            <td>@item.DiscountPercent%</td>
-                                            <td>@item.FinalPrice.ToString("N0")</td>
-                                        </tr>
+                                        <span class="badge bg-secondary me-1">@item.Procedure</span>
                                     }
-                                </tbody>
-                                <tfoot>
-                                    <tr class="tp-totals-row">
-                                        <td colspan="4">TOTAL</td>
-                                        <td>@plan.Items.Sum(i => i.BasePrice).ToString("N0")</td>
-                                        <td></td>
-                                        <td>@plan.Items.Sum(i => i.FinalPrice).ToString("N0")</td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                    }
+                                    @if (plan.Items.Count > 3)
+                                    {
+                                        <span>...</span>
+                                    }
+                                </small>
+                            </div>
+                        }
+                    </div>
                 </div>
             }
         </div>
     </div>
 </div>
-
-<style>
-    .tp-wrapper { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; padding: 10px; }
-
-    /* TOP BAR */
-    .tp-topbar { display: flex; justify-content: space-between; align-items: center; background: #1a1a2e; padding: 10px 16px; border-radius: 8px; margin-bottom: 10px; }
-    .tp-topbar-left { display: flex; align-items: center; gap: 12px; }
-    .tp-patient-input { width: 320px; padding: 8px 12px; border-radius: 6px; border: none; font-size: 14px; }
-    .tp-patient-badge { background: #28a745; color: white; padding: 5px 12px; border-radius: 20px; font-weight: bold; font-size: 13px; }
-    .tp-save-msg { color: #90ee90; font-weight: bold; }
-    .tp-error-msg { color: #ffcc00; font-weight: bold; }
-
-    /* DENTAL CHART */
-    .tp-chart-area { background: white; border-radius: 8px; padding: 10px 6px 6px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .tp-chart-label-row { display: flex; justify-content: space-around; margin-bottom: 4px; }
-    .tp-chart-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-    .tp-teeth-row { display: flex; justify-content: center; align-items: flex-end; gap: 2px; }
-    .tp-lower-row { align-items: flex-start; margin-top: 2px; }
-    .tp-midline { width: 2px; background: #ccc; height: 80px; margin: 0 6px; border-radius: 2px; }
-
-    .tp-tooth { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 2px; border-radius: 6px; border: 2px solid transparent; transition: all 0.15s; color: #c8b89a; width: 44px; }
-    .tp-tooth:hover { border-color: #28a745; color: #28a745; background: #f0fff4; }
-    .tp-tooth-selected { color: #28a745 !important; border-color: #28a745 !important; background: #d4edda !important; }
-    .tp-tooth-svg { width: 36px; height: 56px; }
-    .tp-tooth-svg-flipped { transform: scaleY(-1); }
-    .tp-tooth-num { font-size: 11px; font-weight: 700; color: #555; }
-    .tp-tooth-selected .tp-tooth-num { color: #155724; }
-
-    .tp-selected-bar { display: flex; justify-content: center; align-items: center; gap: 12px; margin-top: 6px; padding: 6px; background: #e8f5e9; border-radius: 6px; font-size: 13px; }
-    .tp-clear-btn { background: #dc3545; color: white; border: none; border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
-
-    /* BODY */
-    .tp-body { display: flex; gap: 10px; }
-
-    /* LEFT PANELS */
-    .tp-panels { width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
-    .tp-panel-row { display: flex; gap: 8px; }
-    .tp-panel { flex: 1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-    .tp-panel-title { font-weight: 800; font-size: 13px; text-align: center; letter-spacing: 1px; margin-bottom: 4px; }
-    .tp-panel-field { display: flex; flex-direction: column; gap: 2px; }
-    .tp-panel-field label { font-size: 11px; font-weight: 600; }
-    .tp-input { border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; background: rgba(255,255,255,0.7); width: 100%; }
-    .tp-select { border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; background: rgba(255,255,255,0.7); width: 100%; cursor: pointer; }
-    .tp-add-btn { margin-top: 4px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 5px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
-    .tp-add-btn:hover { background: rgba(0,0,0,0.35); }
-    .tp-add-btn-alt { background: rgba(0,0,0,0.1); }
-    .tp-panel-crown-btns { display: flex; gap: 6px; }
-    .tp-panel-crown-btns .tp-add-btn { flex: 1; }
-
-    .tp-panel-extraction { background: linear-gradient(135deg, #c8860a, #e6a020); color: white; }
-    .tp-panel-filling    { background: linear-gradient(135deg, #1565c0, #1e88e5); color: white; }
-    .tp-panel-rct        { background: linear-gradient(135deg, #00796b, #26a69a); color: white; }
-    .tp-panel-crown      { background: linear-gradient(135deg, #00838f, #26c6da); color: white; }
-    .tp-panel-implant    { background: linear-gradient(135deg, #4a148c, #7b1fa2); color: white; }
-
-    .tp-panel-extra { flex: 1; display: flex; flex-direction: column; gap: 5px; background: transparent; padding: 0; }
-    .tp-extra-btn { border: none; border-radius: 6px; padding: 9px 8px; font-size: 12px; font-weight: 700; color: white; cursor: pointer; text-align: center; transition: opacity 0.15s; }
-    .tp-extra-btn:hover { opacity: 0.85; }
-    .tp-extra-reendo  { background: linear-gradient(90deg, #e53935, #ff7043); }
-    .tp-extra-braces  { background: linear-gradient(90deg, #e53935 30%, #ff8a65); }
-    .tp-extra-scaling { background: linear-gradient(90deg, #e64a19, #ff8a65); }
-    .tp-extra-sinus   { background: linear-gradient(90deg, #bf360c, #ff7043); }
-    .tp-extra-bone    { background: linear-gradient(90deg, #b71c1c, #e53935); }
-
-    .tp-action-row { display: flex; gap: 8px; margin-top: 4px; }
-    .tp-action-btn { flex: 1; padding: 10px; border: none; border-radius: 6px; font-size: 13px; font-weight: 700; cursor: pointer; transition: opacity 0.15s; }
-    .tp-action-btn:hover { opacity: 0.85; }
-    .tp-btn-save  { background: #fdd835; color: #333; }
-    .tp-btn-print { background: #26a69a; color: white; }
-    .tp-btn-clear { background: #e53935; color: white; }
-
-    /* RIGHT TABLE */
-    .tp-table-area { flex: 1; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-    .tp-table-wrapper { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .tp-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    .tp-table thead tr { background: #1565c0; color: white; }
-    .tp-table th { padding: 9px 10px; text-align: left; font-weight: 600; font-size: 12px; }
-    .tp-table td { padding: 7px 10px; border-bottom: 1px solid #eee; }
-    .tp-row-even { background: #fffde7; }
-    .tp-row-odd  { background: white; }
-    .tp-final-price { font-weight: 700; color: #1565c0; }
-    .tp-discount-input { width: 60px; border: 1px solid #ccc; border-radius: 4px; padding: 3px 6px; font-size: 12px; }
-    .tp-del-btn { background: #e53935; color: white; border: none; border-radius: 4px; padding: 3px 8px; cursor: pointer; font-size: 12px; }
-    .tp-totals-row { background: #e3f2fd; font-weight: 700; }
-    .tp-totals-row td { padding: 8px 10px; }
-    .tp-empty { text-align: center; padding: 40px; color: #aaa; font-size: 14px; }
-    .tp-table-sm { font-size: 12px; }
-
-    /* SUMMARY */
-    .tp-summary { background: white; border-radius: 8px; padding: 14px 18px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .tp-summary-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #eee; font-size: 14px; }
-    .tp-summary-final { border-bottom: none; font-size: 15px; margin-top: 4px; }
-    .tp-discount-text { color: #e53935; }
-    .tp-final-text { color: #1565c0; font-size: 16px; }
-
-    /* HISTORY */
-    .tp-history { background: white; border-radius: 8px; padding: 12px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
-    .tp-history-title { font-weight: 700; font-size: 14px; margin-bottom: 10px; color: #333; border-bottom: 2px solid #eee; padding-bottom: 6px; }
-    .tp-history-plan { margin-bottom: 14px; }
-    .tp-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #666; font-weight: 600; }
-
-    /* PRINT */
-    .print-only { display: none; }
-    @@media print {
-        .tp-topbar, .tp-chart-area, .tp-panels, .tp-history, .tp-summary { display: none !important; }
-        .tp-table-area { width: 100%; }
-        .no-print { display: none !important; }
-        .print-only { display: inline !important; }
-        .tp-table-wrapper { box-shadow: none; }
-        body * { visibility: hidden; }
-        #printArea, #printArea * { visibility: visible; }
-        #printArea { position: absolute; left: 0; top: 0; width: 100%; }
-    }
-</style>
 
 @code {
     private List<Patient> patients = new();
@@ -527,36 +328,47 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadPatients();
+        await LoadHistory();
+    }
+
+    private async Task LoadPatients()
+    {
         patients = await PatientService.GetAllPatientsAsync();
     }
 
-    private string GetSelectedTeethString()
+    private async Task LoadHistory()
     {
-        return selectedTeeth.Count == 0 ? "" : string.Join(", ", selectedTeeth.OrderBy(t => t));
-    }
-
-    private async Task OnPatientSelected(ChangeEventArgs e)
-    {
-        patientName = e.Value?.ToString() ?? "";
-        history = new();
-        saveMessage = "";
         if (!string.IsNullOrWhiteSpace(patientName))
+        {
             history = await TreatmentPlanService.GetByPatientAsync(patientName);
+        }
     }
 
     private void ToggleTooth(int tooth)
     {
-        if (selectedTeeth.Contains(tooth)) selectedTeeth.Remove(tooth);
-        else selectedTeeth.Add(tooth);
+        if (selectedTeeth.Contains(tooth))
+            selectedTeeth.Remove(tooth);
+        else
+            selectedTeeth.Add(tooth);
         procedureError = "";
     }
 
     private void ClearTeeth() => selectedTeeth.Clear();
 
-    private void AddProcedure(string procedure, string variant, decimal pricePerUnit)
+    private void AddProcedure(string procedure, decimal price)
     {
-        procedureError = "";
-        if (!ValidateSelection()) return;
+        if (string.IsNullOrWhiteSpace(patientName))
+        {
+            procedureError = "Please select a patient first!";
+            return;
+        }
+
+        if (selectedTeeth.Count == 0)
+        {
+            procedureError = "Please select at least one tooth!";
+            return;
+        }
 
         foreach (var tooth in selectedTeeth.OrderBy(t => t))
         {
@@ -564,159 +376,112 @@
             {
                 ToothNumbers = tooth.ToString(),
                 Procedure = procedure,
-                ProcedureVariant = variant,
-                PricePerUnit = pricePerUnit,
+                ProcedureVariant = procedure,
+                PricePerUnit = price,
                 NumberOfTeeth = 1,
-                BasePrice = pricePerUnit,
+                BasePrice = price,
                 DiscountPercent = 0
             });
         }
+
         selectedTeeth.Clear();
-    }
-
-    private void AddFillingProcedure()
-    {
-        var variant = fillingPrice switch
-        {
-            2500 => "Composite",
-            3500 => "Glass Ionomer",
-            4500 => "Ceramic",
-            _ => "Composite"
-        };
-        AddProcedure("Filling", variant, fillingPrice);
-    }
-
-    private void AddCrownProcedure()
-    {
-        var variant = crownPrice switch
-        {
-            8000 => "PFM B",
-            10000 => "PFM A",
-            12000 => "PFM A1",
-            21000 => "Zirconium",
-            _ => "PFM B"
-        };
-        AddProcedure("Crown", variant, crownPrice);
-    }
-
-    private void AddBridgeProcedure()
-    {
         procedureError = "";
-        if (selectedTeeth.Count < 2)
-        {
-            procedureError = "Select at least 2 teeth for a bridge.";
-            return;
-        }
-        if (string.IsNullOrWhiteSpace(patientName))
-        {
-            procedureError = "Please select a patient first.";
-            return;
-        }
-
-        var variant = crownPrice switch
-        {
-            8000 => "PFM B",
-            10000 => "PFM A",
-            12000 => "PFM A1",
-            21000 => "Zirconium",
-            _ => "PFM B"
-        };
-
-        var units = selectedTeeth.Count;
-        currentItems.Add(new TreatmentPlanItem
-        {
-            ToothNumbers = string.Join(", ", selectedTeeth.OrderBy(t => t)),
-            Procedure = "Bridge",
-            ProcedureVariant = variant,
-            PricePerUnit = crownPrice,
-            NumberOfTeeth = units,
-            BasePrice = crownPrice * units,
-            DiscountPercent = 0
-        });
-        selectedTeeth.Clear();
+        StateHasChanged();
     }
 
     private void AddFixedProcedure(string procedure, decimal price)
     {
-        procedureError = "";
         if (string.IsNullOrWhiteSpace(patientName))
         {
-            procedureError = "Please select a patient first.";
+            procedureError = "Please select a patient first!";
             return;
         }
 
-        var teeth = selectedTeeth.Count > 0
-            ? string.Join(", ", selectedTeeth.OrderBy(t => t))
-            : "—";
-
         currentItems.Add(new TreatmentPlanItem
         {
-            ToothNumbers = teeth,
+            ToothNumbers = selectedTeeth.Count > 0 ? string.Join(", ", selectedTeeth) : "N/A",
             Procedure = procedure,
-            ProcedureVariant = "",
+            ProcedureVariant = procedure,
             PricePerUnit = price,
-            NumberOfTeeth = selectedTeeth.Count > 0 ? selectedTeeth.Count : 1,
+            NumberOfTeeth = 1,
             BasePrice = price,
             DiscountPercent = 0
         });
-        selectedTeeth.Clear();
-    }
 
-    private bool ValidateSelection()
-    {
-        if (selectedTeeth.Count == 0) { procedureError = "Please select at least one tooth first."; return false; }
-        if (string.IsNullOrWhiteSpace(patientName)) { procedureError = "Please select a patient first."; return false; }
-        return true;
+        selectedTeeth.Clear();
+        procedureError = "";
+        StateHasChanged();
     }
 
     private void RemoveItem(int index)
     {
         if (index >= 0 && index < currentItems.Count)
-            currentItems.RemoveAt(index);
-    }
-
-    private void UpdateDiscount(int index, string value)
-    {
-        if (decimal.TryParse(value, out decimal pct))
         {
-            pct = Math.Clamp(pct, 0, 100);
-            currentItems[index].DiscountPercent = pct;
+            currentItems.RemoveAt(index);
+            StateHasChanged();
         }
     }
 
-    private void ClearPlan() { currentItems.Clear(); saveMessage = ""; }
+    private void ClearPlan()
+    {
+        currentItems.Clear();
+        saveMessage = "";
+        StateHasChanged();
+    }
 
     private async Task SavePlan()
     {
-        if (string.IsNullOrWhiteSpace(patientName)) { procedureError = "Please select a patient first."; return; }
-        if (currentItems.Count == 0) return;
-
-        var plan = new TreatmentPlan
+        if (string.IsNullOrWhiteSpace(patientName))
         {
-            PatientName = patientName,
-            Items = currentItems.Select(i => new TreatmentPlanItem
-            {
-                ToothNumbers = i.ToothNumbers,
-                Procedure = i.Procedure,
-                ProcedureVariant = i.ProcedureVariant,
-                PricePerUnit = i.PricePerUnit,
-                NumberOfTeeth = i.NumberOfTeeth,
-                BasePrice = i.BasePrice,
-                DiscountPercent = i.DiscountPercent
-            }).ToList()
-        };
+            procedureError = "Please select a patient first!";
+            return;
+        }
 
-        await TreatmentPlanService.SavePlanAsync(plan);
-        saveMessage = "Saved!";
-        currentItems.Clear();
-        history = await TreatmentPlanService.GetByPatientAsync(patientName);
+        if (currentItems.Count == 0)
+        {
+            procedureError = "No items to save!";
+            return;
+        }
+
+        try
+        {
+            var plan = new TreatmentPlan
+            {
+                PatientName = patientName,
+                CreatedAt = DateTime.UtcNow,
+                Items = currentItems.Select(i => new TreatmentPlanItem
+                {
+                    ToothNumbers = i.ToothNumbers,
+                    Procedure = i.Procedure,
+                    ProcedureVariant = i.ProcedureVariant,
+                    PricePerUnit = i.PricePerUnit,
+                    NumberOfTeeth = i.NumberOfTeeth,
+                    BasePrice = i.BasePrice,
+                    DiscountPercent = i.DiscountPercent
+                }).ToList()
+            };
+
+            await TreatmentPlanService.SavePlanAsync(plan);
+            saveMessage = "Plan saved successfully!";
+            currentItems.Clear();
+            await LoadHistory();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            procedureError = $"Error: {ex.Message}";
+        }
     }
 
     private async Task DeletePlan(int id)
     {
         await TreatmentPlanService.DeletePlanAsync(id);
-        history = await TreatmentPlanService.GetByPatientAsync(patientName);
+        await LoadHistory();
+        StateHasChanged();
     }
 
-    private async Task PrintPlan() => await JS.InvokeVoidAsync("print");
+    private async Task PrintPlan()
+    {
+        await JS.InvokeVoidAsync("print");
+    }
 }
