@@ -16,9 +16,11 @@
         public string ToothNumbers { get; set; } = "";
         public string Procedure { get; set; } = "";
         public string ProcedureVariant { get; set; } = "";
+        public decimal PricePerUnit { get; set; }
+        public int NumberOfTeeth { get; set; } = 1;
         public decimal BasePrice { get; set; }
-        public decimal Discount { get; set; }
-        public decimal FinalPrice => BasePrice - Discount;
+        public decimal DiscountPercent { get; set; }
+        public decimal FinalPrice => BasePrice - (BasePrice * DiscountPercent / 100);
         public TreatmentPlan? TreatmentPlan { get; set; }
     }
 }
