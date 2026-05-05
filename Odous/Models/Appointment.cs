@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public int AppointmentMR { get; set; }
         public string PatientName { get; set; } = "";
+        public string ContactNo { get; set; } = "";
         public DateTime AppointmentDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly EndTime { get; set; }

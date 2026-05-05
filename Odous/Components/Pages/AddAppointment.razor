@@ -4,6 +4,7 @@
 @inject AppointmentService AppointmentService
 @inject PatientService PatientService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <div class="container mt-4">
     <div class="row justify-content-center">
@@ -16,13 +17,21 @@
 
                     <div class="mb-3">
                         <label>Patient Name</label>
-                        <input @bind="patientName" class="form-control" list="patientList" />
+                        <input class="form-control" list="patientList"
+                               value="@patientName"
+                               @onchange="OnPatientSelected" />
                         <datalist id="patientList">
                             @foreach (var patient in patients)
                             {
                                 <option value="@patient.Name">@patient.Name</option>
                             }
                         </datalist>
+                    </div>
+
+                    <div class="mb-3">
+                        <label>Contact Number</label>
+                        <input @bind="contactNo" class="form-control" placeholder="e.g. 923001234567" />
+                        <small class="text-muted">Include country code without + (e.g. 923001234567)</small>
                     </div>
 
                     <div class="mb-3">
@@ -72,8 +81,8 @@
                         </select>
                     </div>
 
-                    <button class="btn btn-success" @onclick="SaveAppointment">Save</button>
-                    <a href="/appointments" class="btn btn-secondary">Cancel</a>
+                    <button class="btn btn-success" @onclick="SaveAppointment">Save & Send WhatsApp</button>
+                    <a href="/appointments" class="btn btn-secondary ms-2">Cancel</a>
 
                     @if (!string.IsNullOrEmpty(errorMessage))
                     {
@@ -89,6 +98,7 @@
 @code {
     private List<Patient> patients = new();
     private string patientName = "";
+    private string contactNo = "";
     private string serviceType = "";
     private string dentist = "";
     private string procedureNotes = "";
@@ -102,6 +112,18 @@
     protected override async Task OnInitializedAsync()
     {
         patients = await PatientService.GetAllPatientsAsync();
+    }
+
+    private void OnPatientSelected(ChangeEventArgs e)
+    {
+        patientName = e.Value?.ToString() ?? string.Empty;
+
+        // Auto-fill contact number from patient record
+        var matched = patients.FirstOrDefault(p => p.Name == patientName);
+        if (matched != null)
+        {
+            contactNo = matched.ContactNo ?? "";
+        }
     }
 
     private async Task SaveAppointment()
@@ -137,6 +159,7 @@
             var newAppointment = new Appointment
             {
                 PatientName = patientName,
+                ContactNo = contactNo,
                 AppointmentDate = DateTime.SpecifyKind(parsedDate, DateTimeKind.Utc),
                 StartTime = parsedStart,
                 EndTime = parsedEnd,
@@ -148,6 +171,17 @@
             };
 
             await AppointmentService.AddAppointmentAsync(newAppointment);
+
+            // Send WhatsApp message if contact number exists
+            if (!string.IsNullOrWhiteSpace(contactNo))
+            {
+                var message = $"Hello {patientName}, your appointment at Odous Dental Clinic has been scheduled on {parsedDate:dd MMM yyyy} from {parsedStart:HH:mm} to {parsedEnd:HH:mm}. Service: {serviceType}. Please arrive 5 minutes early. Thank you!";
+                var encodedMessage = Uri.EscapeDataString(message);
+                var cleanNumber = contactNo.Replace("+", "").Replace(" ", "").Replace("-", "");
+                var waUrl = $"https://wa.me/{cleanNumber}?text={encodedMessage}";
+                await JS.InvokeVoidAsync("open", waUrl, "_blank");
+            }
+
             Navigation.NavigateTo("/appointments");
         }
         catch (Exception ex)
