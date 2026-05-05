@@ -5,9 +5,9 @@
         public int Id { get; set; }
         public int AppointmentMR { get; set; }
         public string PatientName { get; set; } = "";
-        public string AppointmentDate { get; set; } = "";
-        public string StartTime { get; set; } = "";
-        public string EndTime { get; set; } = "";
+        public DateTime AppointmentDate { get; set; }
+        public TimeOnly StartTime { get; set; }
+        public TimeOnly EndTime { get; set; }
         public string Reason { get; set; } = "";
         public string ProcedureNotes { get; set; } = "";
         public string ServiceType { get; set; } = "";
