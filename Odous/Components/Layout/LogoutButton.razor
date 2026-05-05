@@ -1,0 +1,15 @@
+﻿@using Odous.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<button class="btn btn-outline-danger btn-sm" @onclick="Logout">
+    <i class="bi bi-box-arrow-right"></i> Logout
+</button>
+
+@code {
+    private void Logout()
+    {
+        AuthService.Logout();
+        Navigation.NavigateTo("/login", true);
+    }
+}

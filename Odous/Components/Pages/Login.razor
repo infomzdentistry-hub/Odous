@@ -1,0 +1,108 @@
+﻿@page "/login"
+@using Odous.Models
+@using Odous.Services
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-header bg-gradient-primary text-white rounded-top-4 py-4">
+                    <div class="text-center">
+                        <i class="bi bi-shield-lock-fill fs-1"></i>
+                        <h2 class="mb-0 mt-2">Odous Dental Clinic</h2>
+                        <p class="mb-0 opacity-75">Please login to continue</p>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-person"></i> Username
+                            </label>
+                            <InputText @bind-Value="loginModel.Username" class="form-control form-control-lg" placeholder="Enter username" />
+                            <ValidationMessage For="@(() => loginModel.Username)" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-key"></i> Password
+                            </label>
+                            <InputText @bind-Value="loginModel.Password" type="password" class="form-control form-control-lg" placeholder="Enter password" />
+                            <ValidationMessage For="@(() => loginModel.Password)" />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" disabled="@isLoggingIn">
+                                @if (isLoggingIn)
+                                {
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    <span>Logging in...</span>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-box-arrow-in-right"></i>
+                                    <span> Login</span>
+                                }
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <div class="alert alert-danger mt-3 text-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                @errorMessage
+                            </div>
+                        }
+                    </EditForm>
+                </div>
+                <div class="card-footer bg-light rounded-bottom-4 text-center py-3">
+                    <small class="text-muted">
+                        <i class="bi bi-info-circle"></i>
+                        Demo credentials: <strong>admin</strong> / <strong>admin123</strong>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .card {
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+</style>
+
+@code {
+    private LoginModel loginModel = new LoginModel();
+    private string errorMessage = "";
+    private bool isLoggingIn = false;
+
+    private async Task HandleLogin()
+    {
+        isLoggingIn = true;
+        errorMessage = "";
+
+        await Task.Delay(500); // Simulate async operation
+
+        if (AuthService.Login(loginModel.Username, loginModel.Password))
+        {
+            Navigation.NavigateTo("/", true);
+        }
+        else
+        {
+            errorMessage = "Invalid username or password. Please try again.";
+        }
+
+        isLoggingIn = false;
+    }
+}

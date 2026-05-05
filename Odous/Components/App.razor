@@ -1,6 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@inject Odous.Services.AuthService AuthService
+@inject NavigationManager Navigation
 
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -11,10 +13,26 @@
     <link rel="icon" type="image/png" href="favicon.png" />
     <HeadOutlet />
 </head>
-
 <body>
-    <Routes @rendermode="InteractiveServer" />
+    @if (AuthService.IsLoggedIn())
+    {
+        <Routes @rendermode="InteractiveServer" />
+    }
+    else
+    {
+        <Routes @rendermode="InteractiveServer" />
+    }
     <script src="_framework/blazor.web.js"></script>
 </body>
-
 </html>
+
+@code {
+    protected override void OnInitialized()
+    {
+        var currentUri = Navigation.Uri;
+        if (!AuthService.IsLoggedIn() && !currentUri.Contains("/login"))
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}
