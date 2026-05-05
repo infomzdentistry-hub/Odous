@@ -12,12 +12,13 @@ namespace Odous.Data
 
         public DbSet<Patient> Patients { get; set; } = null!;
         public DbSet<Appointment> Appointments { get; set; } = null!;
+        public DbSet<TreatmentPlan> TreatmentPlans { get; set; } = null!;
+        public DbSet<TreatmentPlanItem> TreatmentPlanItems { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure Patient table
             modelBuilder.Entity<Patient>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -28,7 +29,6 @@ namespace Odous.Data
                 entity.Property(e => e.Address).HasMaxLength(200);
             });
 
-            // Configure Appointment table
             modelBuilder.Entity<Appointment>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -36,6 +36,28 @@ namespace Odous.Data
                 entity.Property(e => e.ServiceType).HasMaxLength(50);
                 entity.Property(e => e.Dentist).HasMaxLength(100);
                 entity.Property(e => e.Status).HasMaxLength(20);
+            });
+
+            modelBuilder.Entity<TreatmentPlan>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.PatientName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.CreatedAt);
+                entity.HasMany(e => e.Items)
+                      .WithOne(e => e.TreatmentPlan)
+                      .HasForeignKey(e => e.TreatmentPlanId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<TreatmentPlanItem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ToothNumbers).HasMaxLength(200);
+                entity.Property(e => e.Procedure).HasMaxLength(50);
+                entity.Property(e => e.ProcedureVariant).HasMaxLength(50);
+                entity.Property(e => e.BasePrice).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.Discount).HasColumnType("decimal(10,2)");
+                entity.Ignore(e => e.FinalPrice);
             });
         }
     }

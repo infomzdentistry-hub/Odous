@@ -10,7 +10,6 @@ builder.WebHost.UseUrls("http://*:8080");
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// Use PostgreSQL connection
 var connectionString = builder.Configuration.GetConnectionString("PostgresConnection")
     ?? "Host=localhost;Database=odous_db;Username=postgres;Password=postgres";
 
@@ -21,6 +20,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
+builder.Services.AddScoped<TreatmentPlanService>();
 builder.Services.AddSingleton<AuthService>();
 
 var app = builder.Build();
@@ -43,8 +43,8 @@ using (var scope = app.Services.CreateScope())
     try
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        dbContext.Database.EnsureCreated();
-        Console.WriteLine("PostgreSQL database connected successfully!");
+        dbContext.Database.Migrate();
+        Console.WriteLine("PostgreSQL database migrated and connected successfully!");
     }
     catch (Exception ex)
     {
