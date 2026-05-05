@@ -10,12 +10,14 @@ builder.WebHost.UseUrls("http://*:8080");
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-// FIX: Use /tmp directory (writable on Render)
-var dbPath = Path.Combine("/tmp", "odous.db");
-Console.WriteLine($"Database path: {dbPath}");
+// Use PostgreSQL connection
+var connectionString = builder.Configuration.GetConnectionString("PostgresConnection")
+    ?? "Host=localhost;Database=odous_db;Username=postgres;Password=postgres";
+
+Console.WriteLine($"Using database connection");
 
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlite($"Data Source={dbPath}"));
+    options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
@@ -42,7 +44,7 @@ using (var scope = app.Services.CreateScope())
     {
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         dbContext.Database.EnsureCreated();
-        Console.WriteLine("Database created successfully!");
+        Console.WriteLine("PostgreSQL database connected successfully!");
     }
     catch (Exception ex)
     {
