@@ -13,6 +13,7 @@
                     <h3>Schedule Appointment</h3>
                 </div>
                 <div class="card-body">
+
                     <div class="mb-3">
                         <label>Patient Name</label>
                         <input @bind="patientName" class="form-control" list="patientList" />
@@ -27,22 +28,22 @@
                     <div class="mb-3">
                         <label>Date</label>
                         <input type="date" class="form-control"
-                               value="@appointmentDate"
-                               @onchange="e => appointmentDate = e.Value?.ToString() ?? string.Empty" />
+                               value="@AppointmentDateString"
+                               @onchange="e => AppointmentDateString = e.Value?.ToString() ?? string.Empty" />
                     </div>
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label>Start Time</label>
                             <input type="time" class="form-control"
-                                   value="@startTime"
-                                   @onchange="e => startTime = e.Value?.ToString() ?? string.Empty" />
+                                   value="@StartTimeString"
+                                   @onchange="e => StartTimeString = e.Value?.ToString() ?? string.Empty" />
                         </div>
                         <div class="col-md-6 mb-3">
                             <label>End Time</label>
                             <input type="time" class="form-control"
-                                   value="@endTime"
-                                   @onchange="e => endTime = e.Value?.ToString() ?? string.Empty" />
+                                   value="@EndTimeString"
+                                   @onchange="e => EndTimeString = e.Value?.ToString() ?? string.Empty" />
                         </div>
                     </div>
 
@@ -78,6 +79,7 @@
                     {
                         <div class="alert alert-danger mt-3">@errorMessage</div>
                     }
+
                 </div>
             </div>
         </div>
@@ -87,14 +89,15 @@
 @code {
     private List<Patient> patients = new();
     private string patientName = "";
-    private string appointmentDate = DateTime.Now.ToString("yyyy-MM-dd");
-    private string startTime = "09:00";
-    private string endTime = "10:00";
     private string serviceType = "";
     private string dentist = "";
     private string procedureNotes = "";
     private string status = "Scheduled";
     private string errorMessage = "";
+
+    private string AppointmentDateString { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+    private string StartTimeString { get; set; } = "09:00";
+    private string EndTimeString { get; set; } = "10:00";
 
     protected override async Task OnInitializedAsync()
     {
@@ -103,28 +106,53 @@
 
     private async Task SaveAppointment()
     {
-        if (string.IsNullOrWhiteSpace(patientName))
+        try
         {
-            errorMessage = "Please enter a patient name";
-            return;
+            errorMessage = "";
+
+            if (string.IsNullOrWhiteSpace(patientName))
+            {
+                errorMessage = "Please enter a patient name";
+                return;
+            }
+
+            if (!DateTime.TryParse(AppointmentDateString, out DateTime parsedDate))
+            {
+                errorMessage = "Please enter a valid date";
+                return;
+            }
+
+            if (!TimeOnly.TryParse(StartTimeString, out TimeOnly parsedStart))
+            {
+                errorMessage = "Please enter a valid start time";
+                return;
+            }
+
+            if (!TimeOnly.TryParse(EndTimeString, out TimeOnly parsedEnd))
+            {
+                errorMessage = "Please enter a valid end time";
+                return;
+            }
+
+            var newAppointment = new Appointment
+            {
+                PatientName = patientName,
+                AppointmentDate = parsedDate,
+                StartTime = parsedStart,
+                EndTime = parsedEnd,
+                ServiceType = serviceType,
+                Dentist = dentist,
+                ProcedureNotes = procedureNotes,
+                Status = status,
+                AppointmentMR = (int)(DateTime.Now.Ticks % 100000)
+            };
+
+            await AppointmentService.AddAppointmentAsync(newAppointment);
+            Navigation.NavigateTo("/appointments");
         }
-
-        var newAppointment = new Appointment
+        catch (Exception ex)
         {
-            PatientName = patientName,
-            AppointmentDate = appointmentDate,
-            StartTime = startTime,
-            EndTime = endTime,
-            ServiceType = serviceType,
-            Dentist = dentist,
-            ProcedureNotes = procedureNotes,
-            Status = status
-        };
-
-        var random = new Random();
-        newAppointment.AppointmentMR = random.Next(1000, 9999);
-
-        await AppointmentService.AddAppointmentAsync(newAppointment);
-        Navigation.NavigateTo("/appointments");
+            errorMessage = $"Error: {ex.Message} | Inner: {ex.InnerException?.Message}";
+        }
     }
 }
