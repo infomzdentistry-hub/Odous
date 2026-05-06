@@ -19,7 +19,7 @@
         public decimal PricePerUnit { get; set; }
         public int NumberOfTeeth { get; set; }
         public decimal BasePrice { get; set; }
-        public decimal DiscountAmount { get; set; } // Now in rupees, not percentage
+        public decimal DiscountAmount { get; set; } = 0;  // Only this - NO DiscountPercent
         public decimal FinalPrice => BasePrice - DiscountAmount;
         public TreatmentPlan? TreatmentPlan { get; set; }
     }
