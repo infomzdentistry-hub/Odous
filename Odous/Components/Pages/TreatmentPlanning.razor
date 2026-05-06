@@ -456,20 +456,28 @@
                     ProcedureVariant = i.ProcedureVariant,
                     PricePerUnit = i.PricePerUnit,
                     NumberOfTeeth = i.NumberOfTeeth,
-                    BasePrice = i.BasePrice,
+                    BasePrice = i.PricePerUnit * i.NumberOfTeeth, // Calculate BasePrice
                     DiscountPercent = i.DiscountPercent
                 }).ToList()
             };
 
             await TreatmentPlanService.SavePlanAsync(plan);
-            saveMessage = "Plan saved successfully!";
+            saveMessage = "✅ Plan saved successfully!";
+        
+            // Clear current items and refresh history
             currentItems.Clear();
             await LoadHistory();
+            StateHasChanged();
+        
+            // Clear success message after 3 seconds
+            await Task.Delay(3000);
+            saveMessage = "";
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            procedureError = $"Error: {ex.Message}";
+            procedureError = $"Error saving plan: {ex.Message}";
+            Console.WriteLine($"Save error: {ex}");
         }
     }
 

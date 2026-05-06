@@ -16,11 +16,14 @@
         public string ToothNumbers { get; set; } = "";
         public string Procedure { get; set; } = "";
         public string ProcedureVariant { get; set; } = "";
-        public decimal PricePerUnit { get; set; } = 0;
-        public int NumberOfTeeth { get; set; } = 1;
-        public decimal BasePrice { get; set; } = 0;
-        public decimal DiscountPercent { get; set; } = 0;
+        public decimal PricePerUnit { get; set; }
+        public int NumberOfTeeth { get; set; }
+        public decimal BasePrice { get; set; }
+        public decimal DiscountPercent { get; set; }
+
+        // This property is computed and not stored in database
         public decimal FinalPrice => BasePrice - (BasePrice * DiscountPercent / 100);
+
         public TreatmentPlan? TreatmentPlan { get; set; }
     }
 }

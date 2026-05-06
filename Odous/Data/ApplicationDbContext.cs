@@ -38,15 +38,17 @@ namespace Odous.Data
                 entity.Property(e => e.Status).HasMaxLength(20);
             });
 
-            modelBuilder.Entity<TreatmentPlan>(entity =>
+            modelBuilder.Entity<TreatmentPlanItem>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.PatientName).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.CreatedAt);
-                entity.HasMany(e => e.Items)
-                      .WithOne(e => e.TreatmentPlan)
-                      .HasForeignKey(e => e.TreatmentPlanId)
-                      .OnDelete(DeleteBehavior.Cascade);
+                entity.Property(e => e.ToothNumbers).HasMaxLength(200);
+                entity.Property(e => e.Procedure).HasMaxLength(50);
+                entity.Property(e => e.ProcedureVariant).HasMaxLength(50);
+                entity.Property(e => e.PricePerUnit).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.NumberOfTeeth);
+                entity.Property(e => e.BasePrice).HasColumnType("decimal(10,2)");
+                entity.Property(e => e.DiscountPercent).HasColumnType("decimal(5,2)");
+                entity.Ignore(e => e.FinalPrice); // Don't store computed property
             });
 
             modelBuilder.Entity<TreatmentPlanItem>(entity =>
