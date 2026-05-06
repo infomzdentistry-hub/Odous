@@ -19,11 +19,8 @@
         public decimal PricePerUnit { get; set; }
         public int NumberOfTeeth { get; set; }
         public decimal BasePrice { get; set; }
-        public decimal DiscountPercent { get; set; }
-
-        // This property is computed and not stored in database
-        public decimal FinalPrice => BasePrice - (BasePrice * DiscountPercent / 100);
-
+        public decimal DiscountAmount { get; set; } // Now in rupees, not percentage
+        public decimal FinalPrice => BasePrice - DiscountAmount;
         public TreatmentPlan? TreatmentPlan { get; set; }
     }
 }

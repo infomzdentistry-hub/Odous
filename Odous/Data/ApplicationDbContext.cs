@@ -47,7 +47,7 @@ namespace Odous.Data
                 entity.Property(e => e.PricePerUnit).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.NumberOfTeeth);
                 entity.Property(e => e.BasePrice).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.DiscountPercent).HasColumnType("decimal(5,2)");
+                entity.Property(e => e.DiscountAmount).HasColumnType("decimal(5,2)");
                 entity.Ignore(e => e.FinalPrice); // Don't store computed property
             });
 
@@ -60,7 +60,7 @@ namespace Odous.Data
                 entity.Property(e => e.PricePerUnit).HasColumnType("decimal(10,2)");
                 entity.Property(e => e.NumberOfTeeth);
                 entity.Property(e => e.BasePrice).HasColumnType("decimal(10,2)");
-                entity.Property(e => e.DiscountPercent).HasColumnType("decimal(5,2)");
+                entity.Property(e => e.DiscountAmount).HasColumnType("decimal(5,2)");
                 entity.Ignore(e => e.FinalPrice);
             });
         }

@@ -15,7 +15,7 @@
             @* Patient Selection *@
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <label class="form-label fw-bold">Patient Name</label>
+                    <label class="form-label fw-bold">Patient Name *</label>
                     <input class="form-control"
                            list="patientList"
                            @bind="patientName"
@@ -119,7 +119,7 @@
                 </div>
             </div>
 
-            @* Procedure Panels *@
+            @* Procedure Buttons *@
             <div class="row mb-3">
                 <div class="col-md-3 mb-2">
                     <div class="card bg-danger text-white">
@@ -130,7 +130,7 @@
                                 <option value="3500">3,500 PKR</option>
                                 <option value="4500">4,500 PKR</option>
                             </select>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Extraction", extractionPrice)'>Add Extraction</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedureGrouped("Extraction", extractionPrice)'>Add Extraction</button>
                         </div>
                     </div>
                 </div>
@@ -143,7 +143,7 @@
                                 <option value="3500">Glass Ionomer - 3,500</option>
                                 <option value="4500">Ceramic - 4,500</option>
                             </select>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Filling", fillingPrice)'>Add Filling</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedureGrouped("Filling", fillingPrice)'>Add Filling</button>
                         </div>
                     </div>
                 </div>
@@ -156,7 +156,7 @@
                                 <option value="8500">8,500 PKR</option>
                                 <option value="11500">11,500 PKR</option>
                             </select>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("RCT", rctPrice)'>Add RCT</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedureGrouped("RCT", rctPrice)'>Add RCT</button>
                         </div>
                     </div>
                 </div>
@@ -170,7 +170,7 @@
                                 <option value="12000">PFM A1 - 12,000</option>
                                 <option value="21000">Zirconium - 21,000</option>
                             </select>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Crown", crownPrice)'>Add Crown</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedureGrouped("Crown", crownPrice)'>Add Crown</button>
                         </div>
                     </div>
                 </div>
@@ -186,7 +186,7 @@
                                 <option value="85000">85,000 PKR</option>
                                 <option value="95000">95,000 PKR</option>
                             </select>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedure("Implant", implantPrice)'>Add Implant</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddProcedureGrouped("Implant", implantPrice)'>Add Implant</button>
                         </div>
                     </div>
                 </div>
@@ -194,9 +194,9 @@
                     <div class="card bg-secondary text-white">
                         <div class="card-body">
                             <h6>Other Procedures</h6>
-                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedure("Scaling & Polishing", 6500)'>Scaling (6,500)</button>
-                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedure("Veneer", 28000)'>Veneer (28,000)</button>
-                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddFixedProcedure("Denture", 35000)'>Denture (35,000)</button>
+                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedureGrouped("Scaling & Polishing", 6500)'>Scaling (6,500)</button>
+                            <button class="btn btn-sm btn-light w-100 mb-1" @onclick='() => AddFixedProcedureGrouped("Veneer", 28000)'>Veneer (28,000)</button>
+                            <button class="btn btn-sm btn-light w-100" @onclick='() => AddFixedProcedureGrouped("Denture", 35000)'>Denture (35,000)</button>
                         </div>
                     </div>
                 </div>
@@ -212,7 +212,7 @@
                 </div>
             </div>
 
-            @* Treatment Plan Table *@
+            @* Treatment Plan Table - Grouped Display *@
             @if (currentItems.Count > 0)
             {
                 <div class="card" id="printArea">
@@ -224,10 +224,12 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>#</th>
-                                    <th>Tooth</th>
+                                    <th>Teeth Numbers</th>
                                     <th>Procedure</th>
+                                    <th>Qty</th>
                                     <th>Price/Unit</th>
-                                    <th>Discount %</th>
+                                    <th>Total Price</th>
+                                    <th>Discount (PKR)</th>
                                     <th>Final Price</th>
                                     <th>Action</th>
                                 </tr>
@@ -239,19 +241,20 @@
                                     var index = i;
                                     <tr>
                                         <td>@(i + 1)</td>
-                                        <td>@item.ToothNumbers</td>
-                                        <td>@item.Procedure</td>
-                                        <td>@item.PricePerUnit.ToString("N0")</td>
+                                        <td><strong>@item.ToothNumbers</strong></td>
+                                        <td>@item.Procedure @item.ProcedureVariant</td>
+                                        <td>@item.NumberOfTeeth</td>
+                                        <td>PKR @item.PricePerUnit.ToString("N0")</td>
+                                        <td>PKR @item.BasePrice.ToString("N0")</td>
                                         <td>
                                             <input type="number"
                                                    class="form-control form-control-sm"
-                                                   style="width: 80px"
-                                                   @bind="item.DiscountPercent"
+                                                   style="width: 100px"
+                                                   @bind="item.DiscountAmount"
                                                    @bind:event="onchange"
-                                                   min="0" max="100" />
-                                            %
+                                                   step="100" />
                                         </td>
-                                        <td class="fw-bold text-success">@item.FinalPrice.ToString("N0")</td>
+                                        <td class="fw-bold text-success">PKR @item.FinalPrice.ToString("N0")</td>
                                         <td>
                                             <button class="btn btn-sm btn-danger" @onclick="() => RemoveItem(index)">Remove</button>
                                         </td>
@@ -260,10 +263,10 @@
                             </tbody>
                             <tfoot class="table-secondary">
                                 <tr>
-                                    <td colspan="3" class="text-end fw-bold">TOTAL:</td>
-                                    <td class="fw-bold">@currentItems.Sum(i => i.PricePerUnit).ToString("N0")</td>
-                                    <td></td>
-                                    <td class="fw-bold text-success">@currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
+                                    <td colspan="5" class="text-end fw-bold">TOTAL:</td>
+                                    <td class="fw-bold">PKR @currentItems.Sum(i => i.BasePrice).ToString("N0")</td>
+                                    <td class="fw-bold text-danger">PKR @currentItems.Sum(i => i.DiscountAmount).ToString("N0")</td>
+                                    <td class="fw-bold text-success">PKR @currentItems.Sum(i => i.FinalPrice).ToString("N0")</td>
                                     <td></td>
                                 </tr>
                             </tfoot>
@@ -352,11 +355,16 @@
         else
             selectedTeeth.Add(tooth);
         procedureError = "";
+        StateHasChanged();
     }
 
-    private void ClearTeeth() => selectedTeeth.Clear();
+    private void ClearTeeth()
+    {
+        selectedTeeth.Clear();
+        StateHasChanged();
+    }
 
-    private void AddProcedure(string procedure, decimal price)
+    private void AddProcedureGrouped(string procedure, decimal pricePerUnit)
     {
         if (string.IsNullOrWhiteSpace(patientName))
         {
@@ -370,17 +378,29 @@
             return;
         }
 
-        foreach (var tooth in selectedTeeth.OrderBy(t => t))
+        var toothNumbers = string.Join(", ", selectedTeeth.OrderBy(t => t));
+        var quantity = selectedTeeth.Count;
+        var totalPrice = pricePerUnit * quantity;
+
+        var existingItem = currentItems.FirstOrDefault(i => i.Procedure == procedure && i.PricePerUnit == pricePerUnit);
+        
+        if (existingItem != null)
+        {
+            existingItem.ToothNumbers = existingItem.ToothNumbers + ", " + toothNumbers;
+            existingItem.NumberOfTeeth += quantity;
+            existingItem.BasePrice += totalPrice;
+        }
+        else
         {
             currentItems.Add(new TreatmentPlanItem
             {
-                ToothNumbers = tooth.ToString(),
+                ToothNumbers = toothNumbers,
                 Procedure = procedure,
                 ProcedureVariant = procedure,
-                PricePerUnit = price,
-                NumberOfTeeth = 1,
-                BasePrice = price,
-                DiscountPercent = 0
+                PricePerUnit = pricePerUnit,
+                NumberOfTeeth = quantity,
+                BasePrice = totalPrice,
+                DiscountAmount = 0
             });
         }
 
@@ -389,7 +409,7 @@
         StateHasChanged();
     }
 
-    private void AddFixedProcedure(string procedure, decimal price)
+    private void AddFixedProcedureGrouped(string procedure, decimal price)
     {
         if (string.IsNullOrWhiteSpace(patientName))
         {
@@ -397,16 +417,31 @@
             return;
         }
 
-        currentItems.Add(new TreatmentPlanItem
+        var toothNumbers = selectedTeeth.Count > 0 ? string.Join(", ", selectedTeeth.OrderBy(t => t)) : "N/A";
+        var quantity = selectedTeeth.Count > 0 ? selectedTeeth.Count : 1;
+        var totalPrice = price * quantity;
+
+        var existingItem = currentItems.FirstOrDefault(i => i.Procedure == procedure);
+        
+        if (existingItem != null && selectedTeeth.Count > 0)
         {
-            ToothNumbers = selectedTeeth.Count > 0 ? string.Join(", ", selectedTeeth) : "N/A",
-            Procedure = procedure,
-            ProcedureVariant = procedure,
-            PricePerUnit = price,
-            NumberOfTeeth = 1,
-            BasePrice = price,
-            DiscountPercent = 0
-        });
+            existingItem.ToothNumbers = existingItem.ToothNumbers + ", " + toothNumbers;
+            existingItem.NumberOfTeeth += quantity;
+            existingItem.BasePrice += totalPrice;
+        }
+        else
+        {
+            currentItems.Add(new TreatmentPlanItem
+            {
+                ToothNumbers = toothNumbers,
+                Procedure = procedure,
+                ProcedureVariant = "",
+                PricePerUnit = price,
+                NumberOfTeeth = quantity,
+                BasePrice = totalPrice,
+                DiscountAmount = 0
+            });
+        }
 
         selectedTeeth.Clear();
         procedureError = "";
@@ -456,28 +491,24 @@
                     ProcedureVariant = i.ProcedureVariant,
                     PricePerUnit = i.PricePerUnit,
                     NumberOfTeeth = i.NumberOfTeeth,
-                    BasePrice = i.PricePerUnit * i.NumberOfTeeth, // Calculate BasePrice
-                    DiscountPercent = i.DiscountPercent
+                    BasePrice = i.BasePrice,
+                    DiscountAmount = i.DiscountAmount
                 }).ToList()
             };
 
             await TreatmentPlanService.SavePlanAsync(plan);
             saveMessage = "✅ Plan saved successfully!";
-        
-            // Clear current items and refresh history
             currentItems.Clear();
             await LoadHistory();
             StateHasChanged();
-        
-            // Clear success message after 3 seconds
+            
             await Task.Delay(3000);
             saveMessage = "";
             StateHasChanged();
         }
         catch (Exception ex)
         {
-            procedureError = $"Error saving plan: {ex.Message}";
-            Console.WriteLine($"Save error: {ex}");
+            procedureError = $"Error: {ex.Message}";
         }
     }
 
@@ -490,6 +521,6 @@
 
     private async Task PrintPlan()
     {
-        await JS.InvokeVoidAsync("printPage");
+        await JS.InvokeVoidAsync("window.print");
     }
 }
