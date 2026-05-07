@@ -1,54 +1,51 @@
-﻿@page "/"
+@page "/"
 @using Odous.Services
 @inject AuthService AuthService
-@inject NavigationManager Navigation
-
-@if (!AuthService.IsLoggedIn())
-{
-    Navigation.NavigateTo("/login", true);
-    return;
-}
 
 <div class="container mt-4">
-    <div class="row">
-        <div class="col-12">
-            <div class="alert alert-success">
-                <h4>Welcome to Odous Dental Clinic</h4>
-                <p>You are logged in as: <strong>@AuthService.GetCurrentUser()</strong></p>
-            </div>
-        </div>
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">🏥 Welcome to Odous Dental Clinic</h1>
+        <p class="lead">Complete dental clinic management system</p>
+        <hr class="my-4">
+        
+        @if (AuthService.IsLoggedIn)
+        {
+            var currentUser = AuthService.GetCurrentUser();
+            <p>Welcome back, <strong>@currentUser?.Name</strong>!</p>
+            <p>Select an option from the menu to get started.</p>
+        }
+        else
+        {
+            <p>Please login to access the system.</p>
+            <a class="btn btn-primary btn-lg" href="/login" role="button">Login</a>
+        }
     </div>
     
     <div class="row mt-4">
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="bi bi-person-plus-fill fs-1"></i>
                     <h5 class="card-title">Patient Management</h5>
-                    <p class="card-text">Add, view, and manage patient records</p>
-                    <a href="/addpatient" class="btn btn-primary">Go to Patients</a>
+                    <p class="card-text">Add, edit, and manage patient records</p>
+                    <a href="/patients" class="btn btn-primary">View Patients</a>
                 </div>
             </div>
         </div>
-        
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="bi bi-calendar-plus-fill fs-1"></i>
                     <h5 class="card-title">Appointments</h5>
                     <p class="card-text">Schedule and manage appointments</p>
-                    <a href="/addappointment" class="btn btn-success">Go to Appointments</a>
+                    <a href="/appointments" class="btn btn-primary">View Appointments</a>
                 </div>
             </div>
         </div>
-        
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
-                    <i class="bi bi-bar-chart-fill fs-1"></i>
-                    <h5 class="card-title">Dashboard</h5>
-                    <p class="card-text">View clinic statistics</p>
-                    <a href="/patients" class="btn btn-info">View Stats</a>
+                    <h5 class="card-title">Treatment Planning</h5>
+                    <p class="card-text">Create and manage treatment plans</p>
+                    <a href="/treatmentplanning" class="btn btn-primary">Treatment Plans</a>
                 </div>
             </div>
         </div>
