@@ -1,0 +1,156 @@
+@page "/planningrecords"
+@using Odous.Models
+@using Odous.Services
+@using Microsoft.JSInterop
+@inject PatientService PatientService
+@inject TreatmentPlanService TreatmentPlanService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<div class="container-fluid mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3>📋 Planning Records</h3>
+        </div>
+        <div class="card-body">
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Search Patient</label>
+                    <input type="text" 
+                           class="form-control form-control-lg"
+                           placeholder="Type patient name to search..."
+                           @bind="searchTerm"
+                           @bind:event="oninput" />
+                    <small class="text-muted">Start typing to search patients...</small>
+                </div>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(searchTerm) && searchResults.Count == 0)
+            {
+                <div class="alert alert-warning mt-3">
+                    No patients found matching "@searchTerm"
+                </div>
+            }
+            
+            @if (searchResults.Count > 0)
+            {
+                <div class="mt-3">
+                    <h5>Patients Found: @searchResults.Count</h5>
+                    <div class="list-group">
+                        @foreach (var patient in searchResults)
+                        {
+                            <div class="list-group-item list-group-item-action" @onclick="() => SelectPatient(patient)">
+                                <strong>@patient.Name</strong><br />
+                                <small>@patient.ContactNo | @patient.Email</small>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+            
+            @if (selectedPatient != null)
+            {
+                <div class="mt-4">
+                    <h4>Planning Records for: @selectedPatient.Name</h4>
+                    
+                    @if (treatmentPlans.Count == 0)
+                    {
+                        <div class="alert alert-info">
+                            No treatment plans found for @selectedPatient.Name.
+                            <a href="/treatmentplanning">Click here to create a treatment plan</a>
+                        </div>
+                    }
+                    else
+                    {
+                        @foreach (var plan in treatmentPlans)
+                        {
+                            <div class="card mb-3 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <strong>Date:</strong> @plan.CreatedAt.ToString("dd MMM yyyy - hh:mm tt")
+                                </div>
+                                <div class="card-body">
+                                    <p><strong>Total Items:</strong> @plan.Items.Count</p>
+                                    <p><strong>Total Amount:</strong> PKR @plan.Items.Sum(i => i.FinalPrice).ToString("N0")</p>
+                                    <button class="btn btn-sm btn-danger" @onclick="() => DeletePlan(plan.Id)">Delete Plan</button>
+                                </div>
+                            </div>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .list-group-item {
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .list-group-item:hover {
+        background-color: #e3f2fd;
+        transform: translateX(5px);
+    }
+</style>
+
+@code {
+    private List<Patient> allPatients = new();
+    private List<Patient> searchResults = new();
+    private string searchTerm = "";
+    private Patient? selectedPatient = null;
+    private List<TreatmentPlan> treatmentPlans = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            allPatients = await PatientService.GetAllPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading patients: {ex.Message}");
+        }
+    }
+
+    protected override void OnParametersSet()
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+        {
+            searchResults = new List<Patient>();
+        }
+        else
+        {
+            searchResults = allPatients
+                .Where(p => p.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+    }
+
+    private async Task SelectPatient(Patient patient)
+    {
+        selectedPatient = patient;
+        try
+        {
+            treatmentPlans = await TreatmentPlanService.GetByPatientAsync(patient.Name);
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading plans: {ex.Message}");
+        }
+    }
+
+    private async Task DeletePlan(int planId)
+    {
+        if (await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this plan?"))
+        {
+            await TreatmentPlanService.DeletePlanAsync(planId);
+            if (selectedPatient != null)
+            {
+                treatmentPlans = await TreatmentPlanService.GetByPatientAsync(selectedPatient.Name);
+            }
+            StateHasChanged();
+        }
+    }
+}

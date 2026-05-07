@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Odous.Models;
 using Odous.Data;
 
@@ -26,22 +26,12 @@ namespace Odous.Services
         public async Task<TreatmentPlan> SavePlanAsync(TreatmentPlan plan)
         {
             using var context = _dbFactory.CreateDbContext();
-
-            // Ensure CreatedAt is set
+            
             if (plan.CreatedAt == default)
             {
                 plan.CreatedAt = DateTime.UtcNow;
             }
-
-            // Calculate BasePrice for each item if not set
-            foreach (var item in plan.Items)
-            {
-                if (item.BasePrice == 0 && item.PricePerUnit > 0)
-                {
-                    item.BasePrice = item.PricePerUnit * item.NumberOfTeeth;
-                }
-            }
-
+            
             context.TreatmentPlans.Add(plan);
             await context.SaveChangesAsync();
             return plan;
