@@ -21,6 +21,7 @@ builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
 builder.Services.AddScoped<PatientService>();
 builder.Services.AddScoped<AppointmentService>();
 builder.Services.AddScoped<TreatmentPlanService>();
+    builder.Services.AddScoped<AuthService>();
 builder.Services.AddSingleton<AuthService>();
 
 var app = builder.Build();
