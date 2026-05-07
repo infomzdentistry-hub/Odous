@@ -1,4 +1,5 @@
-﻿@* Also fix the ) expected errors in AddAppointment by removing inline ToString format calls *@
+@inject Odous.Services.AuthService AuthService
+@inject NavigationManager Navigation
 
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
@@ -11,63 +12,83 @@
 
 <div class="@navMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill"></span> Home
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="addpatient">
-                <span class="bi bi-person-plus-fill"></span> Add Patient
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="patients">
-                <span class="bi bi-person-fill"></span> Patient List
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="addappointment">
-                <span class="bi bi-calendar-plus-fill"></span> Add Appointment
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="appointments">
-                <span class="bi bi-calendar-fill"></span> Appointments
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="treatmentplanning">
-                <span class="bi bi-clipboard2-pulse-fill"></span> Treatment Planning
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3 mt-4 pt-3 border-top">
-            <button class="btn btn-outline-danger btn-sm w-100" @onclick="Logout">Logout</button>
-        </div>
+        @if (AuthService.IsLoggedIn)
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill"></span> Home
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="addpatient">
+                    <span class="bi bi-person-plus-fill"></span> Add Patient
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="patients">
+                    <span class="bi bi-person-fill"></span> Patient List
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="addappointment">
+                    <span class="bi bi-calendar-plus-fill"></span> Add Appointment
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="appointments">
+                    <span class="bi bi-calendar-fill"></span> Appointments
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="treatmentplanning">
+                    <span class="bi bi-clipboard2-pulse-fill"></span> Treatment Planning
+                </NavLink>
+            </div>
+            
+            <!-- PLANNING RECORDS LINK -->
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="planningrecords">
+                    <span class="bi bi-journal-bookmark-fill"></span> Planning Records
+                </NavLink>
+            </div>
+            
+            <div class="nav-item px-3 mt-4 pt-3 border-top">
+                <div class="text-white small mb-2 px-2">
+                    Logged in as: <strong>@AuthService.GetCurrentUser()?.Name</strong>
+                </div>
+                <button class="btn btn-outline-danger btn-sm w-100" @onclick="Logout">
+                    <span class="bi bi-box-arrow-right"></span> Logout
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="login">
+                    <span class="bi bi-box-arrow-in-right"></span> Login
+                </NavLink>
+            </div>
+        }
     </nav>
 </div>
 
 @code {
     private bool collapseNavMenu = true;
     private string? navMenuCssClass => collapseNavMenu ? "collapse" : null;
-
+    
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
     }
-
-    [Inject] private Odous.Services.AuthService? AuthService { get; set; }
-    [Inject] private NavigationManager? Navigation { get; set; }
-
+    
     private void Logout()
     {
-        AuthService?.Logout();
-        Navigation?.NavigateTo("/login", true);
+        AuthService.Logout();
+        Navigation.NavigateTo("/login", true);
     }
 }
