@@ -40,6 +40,15 @@
 
     @* DENTAL CHART *@
     <div class="tp-chart-area">
+        @if (activePanel == null)
+        {
+            <div class="tp-chart-hint">👆 Click the <strong>Teeth Involved</strong> box in any procedure panel to start selecting teeth</div>
+        }
+        else
+        {
+            <div class="tp-chart-hint tp-chart-hint-active">✅ Selecting teeth for: <strong>@activePanel</strong> — click teeth below</div>
+        }
+
         <div class="tp-chart-label-row">
             <span class="tp-chart-label">Upper Right</span>
             <span class="tp-chart-label">Upper Left</span>
@@ -48,11 +57,12 @@
             @foreach (var tooth in upperRight)
             {
                 var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
+                var disabled = activePanel == null ? "tp-tooth-disabled" : "";
+                <div class="@cls @disabled" @onclick="() => ToggleTooth(tooth)">
                     <svg viewBox="0 0 40 70" class="tp-tooth-svg">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9"/>
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85"/>
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25"/>
+                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
+                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
+                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
                     </svg>
                     <span class="tp-tooth-num">@tooth</span>
                 </div>
@@ -61,11 +71,12 @@
             @foreach (var tooth in upperLeft)
             {
                 var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
+                var disabled = activePanel == null ? "tp-tooth-disabled" : "";
+                <div class="@cls @disabled" @onclick="() => ToggleTooth(tooth)">
                     <svg viewBox="0 0 40 70" class="tp-tooth-svg">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9"/>
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85"/>
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25"/>
+                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
+                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
+                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
                     </svg>
                     <span class="tp-tooth-num">@tooth</span>
                 </div>
@@ -76,12 +87,13 @@
             @foreach (var tooth in lowerRight)
             {
                 var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
+                var disabled = activePanel == null ? "tp-tooth-disabled" : "";
+                <div class="@cls @disabled" @onclick="() => ToggleTooth(tooth)">
                     <span class="tp-tooth-num">@tooth</span>
                     <svg viewBox="0 0 40 70" class="tp-tooth-svg tp-tooth-svg-flipped">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9"/>
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85"/>
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25"/>
+                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
+                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
+                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
                     </svg>
                 </div>
             }
@@ -89,12 +101,13 @@
             @foreach (var tooth in lowerLeft)
             {
                 var cls = selectedTeeth.Contains(tooth) ? "tp-tooth tp-tooth-selected" : "tp-tooth";
-                <div class="@cls" @onclick="() => ToggleTooth(tooth)">
+                var disabled = activePanel == null ? "tp-tooth-disabled" : "";
+                <div class="@cls @disabled" @onclick="() => ToggleTooth(tooth)">
                     <span class="tp-tooth-num">@tooth</span>
                     <svg viewBox="0 0 40 70" class="tp-tooth-svg tp-tooth-svg-flipped">
-                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9"/>
-                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85"/>
-                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25"/>
+                        <ellipse cx="20" cy="18" rx="14" ry="16" fill="currentColor" opacity="0.9" />
+                        <path d="M8 28 Q6 55 12 65 Q16 70 20 68 Q24 70 28 65 Q34 55 32 28 Z" fill="currentColor" opacity="0.85" />
+                        <ellipse cx="20" cy="18" rx="10" ry="11" fill="white" opacity="0.25" />
                     </svg>
                 </div>
             }
@@ -120,17 +133,21 @@
         @* LEFT PANELS *@
         <div class="tp-panels">
 
-            @* Row 1 *@
+            @* Row 1: Extraction + Filling *@
             <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-extraction">
+                <div class="tp-panel tp-panel-extraction @(activePanel == "Extraction" ? "tp-panel-active" : "")">
                     <div class="tp-panel-title">EXTRACTION/S</div>
                     <div class="tp-panel-field">
                         <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
+                        <input class="tp-input tp-input-clickable"
+                               value="@(activePanel == "Extraction" ? GetSelectedTeethString() : extractionTeeth)"
+                               readonly
+                               @onclick='() => ActivatePanel("Extraction")'
+                               placeholder="Click to select teeth..." />
                     </div>
                     <div class="tp-panel-field">
                         <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
+                        <input value="@(activePanel == "Extraction" ? selectedTeeth.Count : extractionTeethCount)" readonly class="tp-input" />
                     </div>
                     <div class="tp-panel-field">
                         <label>Procedure Price</label>
@@ -143,15 +160,19 @@
                     <button class="tp-add-btn" @onclick='() => AddProcedureGrouped("Extraction", extractionPrice)'>+ Add</button>
                 </div>
 
-                <div class="tp-panel tp-panel-filling">
+                <div class="tp-panel tp-panel-filling @(activePanel == "Filling" ? "tp-panel-active" : "")">
                     <div class="tp-panel-title">FILLING/S</div>
                     <div class="tp-panel-field">
                         <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
+                        <input class="tp-input tp-input-clickable"
+                               value="@(activePanel == "Filling" ? GetSelectedTeethString() : fillingTeeth)"
+                               readonly
+                               @onclick='() => ActivatePanel("Filling")'
+                               placeholder="Click to select teeth..." />
                     </div>
                     <div class="tp-panel-field">
                         <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
+                        <input value="@(activePanel == "Filling" ? selectedTeeth.Count : fillingTeethCount)" readonly class="tp-input" />
                     </div>
                     <div class="tp-panel-field">
                         <label>Procedure Price</label>
@@ -165,17 +186,21 @@
                 </div>
             </div>
 
-            @* Row 2 *@
+            @* Row 2: RCT + Crown/Bridge *@
             <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-rct">
+                <div class="tp-panel tp-panel-rct @(activePanel == "RCT" ? "tp-panel-active" : "")">
                     <div class="tp-panel-title">RCT/S</div>
                     <div class="tp-panel-field">
                         <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
+                        <input class="tp-input tp-input-clickable"
+                               value="@(activePanel == "RCT" ? GetSelectedTeethString() : rctTeeth)"
+                               readonly
+                               @onclick='() => ActivatePanel("RCT")'
+                               placeholder="Click to select teeth..." />
                     </div>
                     <div class="tp-panel-field">
                         <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
+                        <input value="@(activePanel == "RCT" ? selectedTeeth.Count : rctTeethCount)" readonly class="tp-input" />
                     </div>
                     <div class="tp-panel-field">
                         <label>Procedure Price</label>
@@ -188,15 +213,19 @@
                     <button class="tp-add-btn" @onclick='() => AddProcedureGrouped("RCT", rctPrice)'>+ Add</button>
                 </div>
 
-                <div class="tp-panel tp-panel-crown">
+                <div class="tp-panel tp-panel-crown @(activePanel == "Crown" ? "tp-panel-active" : "")">
                     <div class="tp-panel-title">CROWN/BRIDGE</div>
                     <div class="tp-panel-field">
                         <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
+                        <input class="tp-input tp-input-clickable"
+                               value="@(activePanel == "Crown" ? GetSelectedTeethString() : crownTeeth)"
+                               readonly
+                               @onclick='() => ActivatePanel("Crown")'
+                               placeholder="Click to select teeth..." />
                     </div>
                     <div class="tp-panel-field">
                         <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
+                        <input value="@(activePanel == "Crown" ? selectedTeeth.Count : crownTeethCount)" readonly class="tp-input" />
                     </div>
                     <div class="tp-panel-field">
                         <label>Procedure Price</label>
@@ -214,17 +243,21 @@
                 </div>
             </div>
 
-            @* Row 3 *@
+            @* Row 3: Implant + Extra *@
             <div class="tp-panel-row">
-                <div class="tp-panel tp-panel-implant">
+                <div class="tp-panel tp-panel-implant @(activePanel == "Implant" ? "tp-panel-active" : "")">
                     <div class="tp-panel-title">IMPLANT/S</div>
                     <div class="tp-panel-field">
                         <label>Teeth Involved</label>
-                        <input value="@GetSelectedTeethString()" readonly class="tp-input" />
+                        <input class="tp-input tp-input-clickable"
+                               value="@(activePanel == "Implant" ? GetSelectedTeethString() : implantTeeth)"
+                               readonly
+                               @onclick='() => ActivatePanel("Implant")'
+                               placeholder="Click to select teeth..." />
                     </div>
                     <div class="tp-panel-field">
                         <label>No. of Teeth</label>
-                        <input value="@selectedTeeth.Count" readonly class="tp-input" />
+                        <input value="@(activePanel == "Implant" ? selectedTeeth.Count : implantTeethCount)" readonly class="tp-input" />
                     </div>
                     <div class="tp-panel-field">
                         <label>Procedure Price</label>
@@ -238,19 +271,19 @@
                 </div>
 
                 <div class="tp-panel tp-panel-extra">
-                    <button class="tp-extra-btn tp-extra-reendo"  @onclick='() => AddFixedProcedureGrouped("Re-Endo Treatment", 11500)'>Re-Endo</button>
-                    <button class="tp-extra-btn tp-extra-braces"  @onclick='() => AddFixedProcedureGrouped("Fixed Braces", 85000)'>Fixed Braces</button>
+                    <button class="tp-extra-btn tp-extra-reendo" @onclick='() => AddFixedProcedureGrouped("Re-Endo Treatment", 11500)'>Re-Endo</button>
+                    <button class="tp-extra-btn tp-extra-braces" @onclick='() => AddFixedProcedureGrouped("Fixed Braces", 85000)'>Fixed Braces</button>
                     <button class="tp-extra-btn tp-extra-scaling" @onclick='() => AddFixedProcedureGrouped("Scaling & Polishing", 6500)'>Scaling &amp; Polishing</button>
-                    <button class="tp-extra-btn tp-extra-sinus"   @onclick='() => AddFixedProcedureGrouped("Sinus Lift", 45000)'>Sinus Lift</button>
-                    <button class="tp-extra-btn tp-extra-bone"    @onclick='() => AddFixedProcedureGrouped("Bone Graft", 35000)'>Bone Graft</button>
-                    <button class="tp-extra-btn tp-extra-veneer"  @onclick='() => AddFixedProcedureGrouped("Veneer", 28000)'>Veneer</button>
+                    <button class="tp-extra-btn tp-extra-sinus" @onclick='() => AddFixedProcedureGrouped("Sinus Lift", 45000)'>Sinus Lift</button>
+                    <button class="tp-extra-btn tp-extra-bone" @onclick='() => AddFixedProcedureGrouped("Bone Graft", 35000)'>Bone Graft</button>
+                    <button class="tp-extra-btn tp-extra-veneer" @onclick='() => AddFixedProcedureGrouped("Veneer", 28000)'>Veneer</button>
                     <button class="tp-extra-btn tp-extra-denture" @onclick='() => AddFixedProcedureGrouped("Denture", 35000)'>Denture</button>
                 </div>
             </div>
 
             @* Action Buttons *@
             <div class="tp-action-row">
-                <button class="tp-action-btn tp-btn-save"  @onclick="SavePlan">💾 Save</button>
+                <button class="tp-action-btn tp-btn-save" @onclick="SavePlan">💾 Save</button>
                 <button class="tp-action-btn tp-btn-print" @onclick="PrintPlan">🖨️ Print</button>
                 <button class="tp-action-btn tp-btn-clear" @onclick="ClearPlan">🗑️ Clear</button>
             </div>
@@ -259,6 +292,15 @@
         @* RIGHT TABLE *@
         <div class="tp-table-area">
             <div class="tp-table-wrapper" id="printArea">
+
+                @* Print Header - only visible when printing *@
+                <div class="print-header">
+                    <h2>Odous Dental Clinic</h2>
+                    <h4>Treatment Plan</h4>
+                    <p><strong>Patient:</strong> @patientName &nbsp;&nbsp; <strong>Date:</strong> @DateTime.Now.ToString("dd MMM yyyy")</p>
+                    <hr />
+                </div>
+
                 <table class="tp-table">
                     <thead>
                         <tr>
@@ -311,16 +353,38 @@
                         </tfoot>
                     }
                 </table>
+
                 @if (currentItems.Count == 0)
                 {
-                    <div class="tp-empty">Select teeth on the chart then click a procedure to begin</div>
+                    <div class="tp-empty no-print">Click a <strong>Teeth Involved</strong> box, select teeth, then click Add</div>
+                }
+
+                @* Print Summary *@
+                @if (currentItems.Count > 0)
+                {
+                    <div class="print-summary">
+                        <table class="print-summary-table">
+                            <tr>
+                                <td>Actual Price:</td>
+                                <td><strong>PKR @currentItems.Sum(i => i.BasePrice).ToString("N0")</strong></td>
+                            </tr>
+                            <tr>
+                                <td>Total Discount:</td>
+                                <td><strong>PKR @currentItems.Sum(i => i.DiscountAmount).ToString("N0")</strong></td>
+                            </tr>
+                            <tr>
+                                <td><strong>After Discount:</strong></td>
+                                <td><strong>PKR @currentItems.Sum(i => i.FinalPrice).ToString("N0")</strong></td>
+                            </tr>
+                        </table>
+                    </div>
                 }
             </div>
 
-            @* Summary *@
+            @* Screen-only Summary *@
             @if (currentItems.Count > 0)
             {
-                <div class="tp-summary">
+                <div class="tp-summary no-print">
                     <div class="tp-summary-row">
                         <span>Actual Price</span>
                         <strong>PKR @currentItems.Sum(i => i.BasePrice).ToString("N0")</strong>
@@ -339,7 +403,7 @@
             @* History *@
             @if (history.Count > 0)
             {
-                <div class="tp-history">
+                <div class="tp-history no-print">
                     <div class="tp-history-title">Treatment History — @patientName</div>
                     @foreach (var plan in history.OrderByDescending(p => p.CreatedAt))
                     {
@@ -402,6 +466,8 @@
     .tp-error-msg { color: #ffcc00; font-weight: bold; }
 
     .tp-chart-area { background: white; border-radius: 8px; padding: 10px 6px 6px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .tp-chart-hint { text-align: center; font-size: 12px; color: #888; margin-bottom: 6px; padding: 4px; background: #f8f9fa; border-radius: 4px; }
+    .tp-chart-hint-active { background: #e8f5e9; color: #155724; }
     .tp-chart-label-row { display: flex; justify-content: space-around; margin-bottom: 4px; }
     .tp-chart-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
     .tp-teeth-row { display: flex; justify-content: center; align-items: flex-end; gap: 2px; }
@@ -411,6 +477,7 @@
     .tp-tooth { display: flex; flex-direction: column; align-items: center; cursor: pointer; padding: 2px; border-radius: 6px; border: 2px solid transparent; transition: all 0.15s; color: #c8b89a; width: 44px; user-select: none; }
     .tp-tooth:hover { border-color: #28a745; color: #28a745; background: #f0fff4; }
     .tp-tooth-selected { color: #28a745 !important; border-color: #28a745 !important; background: #d4edda !important; }
+    .tp-tooth-disabled { opacity: 0.35; cursor: not-allowed; pointer-events: none; }
     .tp-tooth-svg { width: 36px; height: 56px; }
     .tp-tooth-svg-flipped { transform: scaleY(-1); }
     .tp-tooth-num { font-size: 11px; font-weight: 700; color: #555; }
@@ -423,11 +490,14 @@
 
     .tp-panels { width: 420px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; }
     .tp-panel-row { display: flex; gap: 8px; }
-    .tp-panel { flex: 1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .tp-panel { flex: 1; border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 6px; transition: box-shadow 0.2s; }
+    .tp-panel-active { box-shadow: 0 0 0 3px white, 0 0 0 5px #ffd700 !important; }
     .tp-panel-title { font-weight: 800; font-size: 13px; text-align: center; letter-spacing: 1px; margin-bottom: 4px; }
     .tp-panel-field { display: flex; flex-direction: column; gap: 2px; }
     .tp-panel-field label { font-size: 11px; font-weight: 600; }
     .tp-input { border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; background: rgba(255,255,255,0.7); width: 100%; }
+    .tp-input-clickable { cursor: pointer; }
+    .tp-input-clickable:hover { background: rgba(255,255,255,0.95) !important; }
     .tp-select { border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; background: rgba(255,255,255,0.7); width: 100%; cursor: pointer; }
     .tp-add-btn { margin-top: 4px; background: rgba(0,0,0,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 5px; font-size: 12px; font-weight: 700; cursor: pointer; transition: background 0.15s; }
     .tp-add-btn:hover { background: rgba(0,0,0,0.35); }
@@ -486,13 +556,24 @@
     .tp-history-plan { margin-bottom: 14px; }
     .tp-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; font-size: 13px; color: #666; font-weight: 600; }
 
+    /* PRINT */
+    .print-header { display: none; }
+    .print-summary { display: none; }
     .print-only { display: none; }
+
     @@media print {
-        .tp-topbar, .tp-chart-area, .tp-panels, .tp-history, .tp-summary { display: none !important; }
-        .tp-table-area { width: 100%; }
-        .no-print { display: none !important; }
+        .tp-topbar, .tp-chart-area, .tp-panels, .tp-history,
+        .tp-summary, .no-print { display: none !important; }
+        .tp-table-area { width: 100% !important; }
+        .tp-table-wrapper { box-shadow: none !important; border-radius: 0 !important; }
+        .print-header { display: block !important; padding: 10px 20px; }
+        .print-header h2 { margin: 0; font-size: 20px; }
+        .print-header h4 { margin: 4px 0; font-size: 15px; color: #333; }
+        .print-header p { margin: 4px 0; font-size: 13px; }
+        .print-summary { display: block !important; padding: 10px 20px; margin-top: 10px; }
+        .print-summary-table { margin-left: auto; font-size: 13px; }
+        .print-summary-table td { padding: 3px 12px; }
         .print-only { display: inline !important; }
-        .tp-table-wrapper { box-shadow: none; }
         body * { visibility: hidden; }
         #printArea, #printArea * { visibility: visible; }
         #printArea { position: absolute; left: 0; top: 0; width: 100%; }
@@ -507,6 +588,14 @@
     private List<TreatmentPlan> history = new();
     private string procedureError = "";
     private string saveMessage = "";
+    private string? activePanel = null;
+
+    // Per-panel teeth display (shown after adding)
+    private string extractionTeeth = ""; private int extractionTeethCount = 0;
+    private string fillingTeeth = ""; private int fillingTeethCount = 0;
+    private string rctTeeth = ""; private int rctTeethCount = 0;
+    private string crownTeeth = ""; private int crownTeethCount = 0;
+    private string implantTeeth = ""; private int implantTeethCount = 0;
 
     private decimal extractionPrice = 2500;
     private decimal fillingPrice = 2500;
@@ -515,9 +604,9 @@
     private decimal implantPrice = 75000;
 
     private List<int> upperRight = new() { 18, 17, 16, 15, 14, 13, 12, 11 };
-    private List<int> upperLeft  = new() { 21, 22, 23, 24, 25, 26, 27, 28 };
+    private List<int> upperLeft = new() { 21, 22, 23, 24, 25, 26, 27, 28 };
     private List<int> lowerRight = new() { 48, 47, 46, 45, 44, 43, 42, 41 };
-    private List<int> lowerLeft  = new() { 31, 32, 33, 34, 35, 36, 37, 38 };
+    private List<int> lowerLeft = new() { 31, 32, 33, 34, 35, 36, 37, 38 };
 
     protected override async Task OnInitializedAsync()
     {
@@ -536,8 +625,21 @@
             history = await TreatmentPlanService.GetByPatientAsync(patientName);
     }
 
+    private void ActivatePanel(string panel)
+    {
+        // Switching panel clears current selection
+        if (activePanel != panel)
+        {
+            selectedTeeth.Clear();
+        }
+        activePanel = panel;
+        procedureError = "";
+        StateHasChanged();
+    }
+
     private void ToggleTooth(int tooth)
     {
+        if (activePanel == null) return;
         if (selectedTeeth.Contains(tooth)) selectedTeeth.Remove(tooth);
         else selectedTeeth.Add(tooth);
         procedureError = "";
@@ -545,6 +647,18 @@
     }
 
     private void ClearTeeth() { selectedTeeth.Clear(); StateHasChanged(); }
+
+    private void SetPanelTeeth(string panel, string teeth, int count)
+    {
+        switch (panel)
+        {
+            case "Extraction": extractionTeeth = teeth; extractionTeethCount = count; break;
+            case "Filling": fillingTeeth = teeth; fillingTeethCount = count; break;
+            case "RCT": rctTeeth = teeth; rctTeethCount = count; break;
+            case "Crown": crownTeeth = teeth; crownTeethCount = count; break;
+            case "Implant": implantTeeth = teeth; implantTeethCount = count; break;
+        }
+    }
 
     private void AddProcedureGrouped(string procedure, decimal pricePerUnit)
     {
@@ -567,17 +681,19 @@
         {
             currentItems.Add(new TreatmentPlanItem
             {
-                ToothNumbers     = toothNumbers,
-                Procedure        = procedure,
+                ToothNumbers = toothNumbers,
+                Procedure = procedure,
                 ProcedureVariant = procedure,
-                PricePerUnit     = pricePerUnit,
-                NumberOfTeeth    = quantity,
-                BasePrice        = totalPrice,
-                DiscountAmount   = 0
+                PricePerUnit = pricePerUnit,
+                NumberOfTeeth = quantity,
+                BasePrice = totalPrice,
+                DiscountAmount = 0
             });
         }
 
+        SetPanelTeeth(procedure, toothNumbers, quantity);
         selectedTeeth.Clear();
+        activePanel = null;
         StateHasChanged();
     }
 
@@ -589,26 +705,30 @@
 
         var variant = crownPrice switch
         {
-            8000  => "PFM B",
+            8000 => "PFM B",
             10000 => "PFM A",
             12000 => "PFM A1",
             21000 => "Zirconium",
-            _     => "PFM B"
+            _ => "PFM B"
         };
 
         var units = selectedTeeth.Count;
+        var toothNumbers = string.Join(", ", selectedTeeth.OrderBy(t => t));
+
         currentItems.Add(new TreatmentPlanItem
         {
-            ToothNumbers     = string.Join(", ", selectedTeeth.OrderBy(t => t)),
-            Procedure        = "Bridge",
+            ToothNumbers = toothNumbers,
+            Procedure = "Bridge",
             ProcedureVariant = variant,
-            PricePerUnit     = crownPrice,
-            NumberOfTeeth    = units,
-            BasePrice        = crownPrice * units,
-            DiscountAmount   = 0
+            PricePerUnit = crownPrice,
+            NumberOfTeeth = units,
+            BasePrice = crownPrice * units,
+            DiscountAmount = 0
         });
 
+        SetPanelTeeth("Crown", toothNumbers, units);
         selectedTeeth.Clear();
+        activePanel = null;
         StateHasChanged();
     }
 
@@ -618,30 +738,31 @@
         if (string.IsNullOrWhiteSpace(patientName)) { procedureError = "Please select a patient first!"; return; }
 
         var toothNumbers = selectedTeeth.Count > 0 ? string.Join(", ", selectedTeeth.OrderBy(t => t)) : "N/A";
-        var quantity     = selectedTeeth.Count > 0 ? selectedTeeth.Count : 1;
+        var quantity = selectedTeeth.Count > 0 ? selectedTeeth.Count : 1;
 
         var existing = currentItems.FirstOrDefault(i => i.Procedure == procedure);
         if (existing != null && selectedTeeth.Count > 0)
         {
-            existing.ToothNumbers   = existing.ToothNumbers + ", " + toothNumbers;
+            existing.ToothNumbers = existing.ToothNumbers + ", " + toothNumbers;
             existing.NumberOfTeeth += quantity;
-            existing.BasePrice     += price * quantity;
+            existing.BasePrice += price * quantity;
         }
         else
         {
             currentItems.Add(new TreatmentPlanItem
             {
-                ToothNumbers     = toothNumbers,
-                Procedure        = procedure,
+                ToothNumbers = toothNumbers,
+                Procedure = procedure,
                 ProcedureVariant = "",
-                PricePerUnit     = price,
-                NumberOfTeeth    = quantity,
-                BasePrice        = price * quantity,
-                DiscountAmount   = 0
+                PricePerUnit = price,
+                NumberOfTeeth = quantity,
+                BasePrice = price * quantity,
+                DiscountAmount = 0
             });
         }
 
         selectedTeeth.Clear();
+        activePanel = null;
         StateHasChanged();
     }
 
@@ -663,7 +784,16 @@
         }
     }
 
-    private void ClearPlan() { currentItems.Clear(); saveMessage = ""; StateHasChanged(); }
+    private void ClearPlan()
+    {
+        currentItems.Clear();
+        selectedTeeth.Clear();
+        activePanel = null;
+        extractionTeeth = fillingTeeth = rctTeeth = crownTeeth = implantTeeth = "";
+        extractionTeethCount = fillingTeethCount = rctTeethCount = crownTeethCount = implantTeethCount = 0;
+        saveMessage = "";
+        StateHasChanged();
+    }
 
     private async Task SavePlan()
     {
@@ -675,22 +805,23 @@
             var plan = new TreatmentPlan
             {
                 PatientName = patientName,
-                CreatedAt   = DateTime.UtcNow,
-                Items       = currentItems.Select(i => new TreatmentPlanItem
+                CreatedAt = DateTime.UtcNow,
+                Items = currentItems.Select(i => new TreatmentPlanItem
                 {
-                    ToothNumbers     = i.ToothNumbers,
-                    Procedure        = i.Procedure,
+                    ToothNumbers = i.ToothNumbers,
+                    Procedure = i.Procedure,
                     ProcedureVariant = i.ProcedureVariant,
-                    PricePerUnit     = i.PricePerUnit,
-                    NumberOfTeeth    = i.NumberOfTeeth,
-                    BasePrice        = i.BasePrice,
-                    DiscountAmount   = i.DiscountAmount
+                    PricePerUnit = i.PricePerUnit,
+                    NumberOfTeeth = i.NumberOfTeeth,
+                    BasePrice = i.BasePrice,
+                    DiscountAmount = i.DiscountAmount
                 }).ToList()
             };
 
             await TreatmentPlanService.SavePlanAsync(plan);
             saveMessage = "✅ Saved!";
             currentItems.Clear();
+            activePanel = null;
             history = await TreatmentPlanService.GetByPatientAsync(patientName);
             StateHasChanged();
 
