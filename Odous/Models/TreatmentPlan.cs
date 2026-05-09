@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace Odous.Models
 {
     public class TreatmentPlan
@@ -20,9 +17,9 @@ namespace Odous.Models
         public string Procedure { get; set; } = "";
         public string ProcedureVariant { get; set; } = "";
         public decimal PricePerUnit { get; set; }
-        public int NumberOfTeeth { get; set; }
+        public int NumberOfTeeth { get; set; } = 1;
         public decimal BasePrice { get; set; }
-        public decimal DiscountAmount { get; set; } = 0;
+        public decimal DiscountAmount { get; set; }
         public decimal FinalPrice => BasePrice - DiscountAmount;
         public TreatmentPlan? TreatmentPlan { get; set; }
     }
